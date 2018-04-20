@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>JSON to Dart</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="styles/github.css">
+
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <h2>JSON to Dart</h2>
+            <p class="lead">Paste JSON your json in the textarea below, click convert and get your Dart classes for free.</p>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <form onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="json">JSON</label>
+                        <textarea class="form-control" id="json" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Dart</button>
+                </form>
+            </div>
+            <div class="col-12 col-md-8">
+                <pre><code class="dart"></code></pre>
+            </div>
+        </div>
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">Handcrafted by Javier Lecuona (javiercbk)</p>
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    <a href="https://github.com/javiercbk">Github</a>
+                </li>
+                <li class="list-inline-item">
+                    <a href="https://github.com/javiercbk/json_to_dart">Code</a>
+                </li>
+            </ul>
+        </footer>
+    </div>
+    <script src="js/highlight.min.js"></script>
+    <script src="js/page.js"></script>
+</body>
+
+</html>
