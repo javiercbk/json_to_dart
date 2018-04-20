@@ -1,0 +1,19 @@
+# See https://www.dartlang.org/guides/libraries/private-files
+
+# Files created by dart2js.
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+
+
+# Files and directories created by pub
+.buildlog
+.dart_tool/
+.packages
+.pub/
+build/
+pubspec.lock
+
+# Directory created by dartdoc
+doc/api/
