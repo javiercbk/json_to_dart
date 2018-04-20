@@ -1,0 +1,22 @@
+language: dart
+sudo: false
+
+dart:
+  - dev
+  - stable
+
+dart_task:
+  - test: --platform vm
+
+# Only run one instance of the formatter and the analyzer, rather than running
+# them against each Dart version.
+matrix:
+  include:
+  - dart: stable
+    dart_task: dartfmt
+  - dart: dev
+    dart_task: dartanalyzer
+
+# Only building master means that we don't run two builds for each pull request.
+branches:
+  only: [master]
