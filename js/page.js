@@ -8279,58 +8279,26 @@
           t1 = false;
         return t1;
       },
-      _buildParseClass$1: function(expression) {
-        var properType = this.subtype;
-        return "new " + H.S(properType != null ? properType : this.name) + ".fromJson(" + expression + ")";
-      },
       jsonParseExpression$1: function(key) {
-        var jsonKey, fieldKey, t1, t2;
+        var jsonKey, fieldKey, t1, properType;
         jsonKey = "json['" + H.S(key) + "']";
         fieldKey = Q.fixFieldName(key, this);
-        t1 = this._isPrimitive === true;
-        if (t1) {
-          t2 = J.contains$1$asx(this.name, "List");
-          t2 = !t2;
-        } else
-          t2 = false;
-        if (t2)
-          switch (this.name) {
-            case "String":
-              return fieldKey + " = json['" + H.S(key) + "'];";
-            case "int":
-              return fieldKey + " = " + ("int.parse(" + jsonKey + ", radix: 10, onError: (source) => null)") + ";";
-            case "double":
-              return fieldKey + " = " + ("double.parse(" + jsonKey + ", (source) => null)") + ";";
-            default:
-              return fieldKey + " = json['" + H.S(key) + "'] != null ? " + (jsonKey + ".toLowerCase() == 'true' : null") + ";";
-          }
-        else if (t1 && J.contains$1$asx(this.name, "List"))
-          switch (this.subtype) {
-            case "String":
-              return fieldKey + " = json['" + H.S(key) + "'];";
-            case "int":
-              return fieldKey + " = json['" + H.S(key) + "'] != null ? json['" + H.S(key) + "'].map((v) => int.parse(v, radix: 10, onError: (source) => null)) : null;";
-            case "double":
-              return fieldKey + " = json['" + H.S(key) + "'] != null ? json['" + H.S(key) + "'].map((v) => double.parse(v, (source) => null)) : null;";
-            default:
-              return fieldKey + " = json['" + H.S(key) + "'] != null ? json['" + H.S(key) + "'].map((v) => v.toLowerCase() == 'true' : null) : null;";
-          }
+        if (this._isPrimitive === true)
+          return fieldKey + " = json['" + H.S(key) + "'];";
         else if (J.contains$1$asx(this.name, "List"))
-          return fieldKey + " = json['" + H.S(key) + "'] != null ? json['" + H.S(key) + "'].map((v) => " + this._buildParseClass$1("v") + ") : null;";
-        else
-          return fieldKey + " = json['" + H.S(key) + "'] != null ? " + this._buildParseClass$1(jsonKey) + " : null;";
+          return "if (json['" + H.S(key) + "'] != null) {\n\t\t\t" + fieldKey + " = new List<" + H.S(this.subtype) + ">();\n\t\t\tjson['" + H.S(key) + "'].forEach((v) { " + fieldKey + ".add(new " + H.S(this.subtype) + ".fromJson(v)); });\n\t\t}";
+        else {
+          t1 = fieldKey + " = json['" + H.S(key) + "'] != null ? ";
+          properType = this.subtype;
+          return t1 + ("new " + H.S(properType != null ? properType : this.name) + ".fromJson(" + jsonKey + ")") + " : null;";
+        }
       },
       toJsonExpression$1: function(key) {
         var thisKey = "this." + Q.fixFieldName(key, this);
         if (this._isPrimitive === true)
-          switch (this.name) {
-            case "String":
-              return "data['" + H.S(key) + "'] = " + thisKey + ";";
-            default:
-              return "if (" + thisKey + " != null) {\n      data['" + H.S(key) + "'] = " + thisKey + ".toString();\n    }";
-          }
+          return "data['" + H.S(key) + "'] = " + thisKey + ";";
         else if (this.name === "List")
-          return "if (" + thisKey + " != null) {\n      data['" + H.S(key) + "'] = " + thisKey + ".map((v) => v.toJson());\n    }";
+          return "if (" + thisKey + " != null) {\n      data['" + H.S(key) + "'] = " + thisKey + ".map((v) => v.toJson()).toList();\n    }";
         else
           return "if (" + thisKey + " != null) {\n      data['" + H.S(key) + "'] = " + (thisKey + ".toJson()") + ";\n    }";
       },
@@ -8378,6 +8346,19 @@
         var t1 = this.fields.get$keys();
         return H.MappedIterable_MappedIterable(t1, new M.ClassDefinition__fieldList_closure(this), H.getRuntimeTypeArgument(t1, "Iterable", 0), null).join$1(0, "\n");
       },
+      get$_defaultConstructor: function() {
+        var t1, sb, t2, t3;
+        t1 = {};
+        sb = new P.StringBuffer("");
+        sb._contents = "\t" + H.S(this._syntax$_name) + "({";
+        t1.i = 0;
+        t2 = this.fields;
+        t3 = t2.get$keys();
+        t3 = t3.get$length(t3);
+        t2.get$keys().forEach$1(0, new M.ClassDefinition__defaultConstructor_closure(t1, this, sb, t3 - 1));
+        t3 = sb._contents += "});";
+        return t3.charCodeAt(0) == 0 ? t3 : t3;
+      },
       get$_jsonParseFunc: function() {
         var sb, t1;
         sb = new P.StringBuffer("");
@@ -8399,7 +8380,7 @@
         return t1.charCodeAt(0) == 0 ? t1 : t1;
       },
       toString$0: function(_) {
-        return "class " + H.S(this._syntax$_name) + " {\n" + this.get$_fieldList() + "\n\n" + this.get$_jsonParseFunc() + "\n\n" + this.get$_jsonGenFunc() + "\n}\n";
+        return "class " + H.S(this._syntax$_name) + " {\n" + this.get$_fieldList() + "\n\n" + this.get$_defaultConstructor() + "\n\n" + this.get$_jsonParseFunc() + "\n\n" + this.get$_jsonGenFunc() + "\n}\n";
       }
     },
     ClassDefinition_dependencies_closure: {
@@ -8447,6 +8428,19 @@
         t1 += " " + fieldName + ";";
         return t1.charCodeAt(0) == 0 ? t1 : t1;
       }, null, null, 4, 0, null, 26, "call"]
+    },
+    ClassDefinition__defaultConstructor_closure: {
+      "^": "Closure:0;_box_0,$this,sb,len",
+      call$1: function(key) {
+        var t1, t2, t3, t4;
+        t1 = this.sb;
+        t2 = t1._contents += "this." + Q.fixFieldName(key, this.$this.fields.$index(0, key));
+        t3 = this._box_0;
+        t4 = t3.i;
+        if (t4 !== this.len)
+          t1._contents = t2 + ", ";
+        t3.i = t4 + 1;
+      }
     },
     ClassDefinition__jsonParseFunc_closure: {
       "^": "Closure:0;$this,sb",
