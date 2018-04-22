@@ -10,6 +10,7 @@ dependencies:
 
 dev_dependencies:
   test: "^0.12.35"
+  path: "^1.5.1"
 
 transformers:
 - $dart2js:
