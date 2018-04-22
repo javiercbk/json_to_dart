@@ -9,6 +9,12 @@
             "program": "${workspaceFolder}/main.dart",
             "request": "launch",
             "type": "dart"
-        }
+        },
+        {
+            "name": "Unit Tests",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/model_generator_test.dart"
+        },
     ]
 }

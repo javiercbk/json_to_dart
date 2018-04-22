@@ -31,18 +31,6 @@ class TypeDefinition {
     return name == other.name && subtype == other.subtype;
   }
 
-  String _buildParseInt(String expression) {
-    return "int.parse($expression, radix: 10, onError: (source) => null)";
-  }
-
-  String _buildParseDouble(String expression) {
-    return "double.parse($expression, (source) => null)";
-  }
-
-  String _buildParseBool(String expression) {
-    return "$expression.toLowerCase() == 'true' : null";
-  }
-
   String _buildParseClass(String expression) {
     final properType = subtype != null ? subtype : name;
     return 'new $properType.fromJson($expression)';
@@ -55,56 +43,26 @@ class TypeDefinition {
   String jsonParseExpression(String key) {
     final jsonKey = "json['$key']";
     final fieldKey = fixFieldName(key, this);
-    if (isPrimitive && !isPrimitiveList) {
-        switch (name) {
-          case 'String':
-            return "$fieldKey = json['$key'];";
-          case 'int':
-            return "$fieldKey = ${_buildParseInt(jsonKey)};";
-          case 'double':
-            return "$fieldKey = ${_buildParseDouble(jsonKey)};";
-          default:
-            // bool
-            return "$fieldKey = json['$key'] != null ? ${_buildParseBool(jsonKey)};";
-        }
-      } else if (isPrimitiveList) {
-        switch (subtype) {
-          case 'String':
-            return "$fieldKey = json['$key'];";
-          case 'int':
-            return "$fieldKey = json['$key'] != null ? json['$key'].map((v) => ${_buildParseInt('v')}) : null;";
-          case 'double':
-            return "$fieldKey = json['$key'] != null ? json['$key'].map((v) => ${_buildParseDouble('v')}) : null;";
-          default:
-            // bool
-            return "$fieldKey = json['$key'] != null ? json['$key'].map((v) => ${_buildParseBool('v')}) : null;";
-        }
-      } else if (name.contains('List')) {
-        // list of class
-        return "$fieldKey = json['$key'] != null ? json['$key'].map((v) => ${_buildParseClass('v')}) : null;";
-      } else {
-        // class
-        return "$fieldKey = json['$key'] != null ? ${_buildParseClass(jsonKey)} : null;";
-      }
+    if (isPrimitive) {
+        return "$fieldKey = json['$key'];";
+    } else if (name.contains('List')) {
+      // list of class
+      return "if (json['$key'] != null) {\n\t\t\t$fieldKey = new List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
+    } else {
+      // class
+      return "$fieldKey = json['$key'] != null ? ${_buildParseClass(jsonKey)} : null;";
+    }
   }
 
   String toJsonExpression(String key) {
     final fieldKey = fixFieldName(key, this);
     final thisKey = 'this.$fieldKey';
     if (isPrimitive) {
-      switch (name) {
-        case 'String':
-          return "data['$key'] = $thisKey;";
-        default:
-          // int, double, bool, List<primitive>
-          return """if ($thisKey != null) {
-      data['$key'] = $thisKey.toString();
-    }""";
-      }
+      return "data['$key'] = $thisKey;";  
     } else if (name == 'List'){
       // class list
       return """if ($thisKey != null) {
-      data['$key'] = $thisKey.map((v) => ${_buildToJsonClass('v')});
+      data['$key'] = $thisKey.map((v) => ${_buildToJsonClass('v')}).toList();
     }""";
     } else {
       // class
@@ -176,8 +134,26 @@ class ClassDefinition {
     }).join('\n');
   }
 
+  String get _defaultConstructor {
+    final sb = new StringBuffer();
+    sb.write('\t$name({');
+    var i = 0;
+    var len = fields.keys.length - 1;
+    fields.keys.forEach((key) {
+      final f = fields[key];
+      final fieldName = fixFieldName(key, f);
+      sb.write('this.$fieldName');
+      if (i != len) {
+        sb.write(', ');
+      }
+      i++;
+    });
+    sb.write('});');
+    return sb.toString();
+  }
+
   String get _jsonParseFunc {
-    var sb = new StringBuffer();
+    final sb = new StringBuffer();
     sb.write('\t$name');
     sb.write('.fromJson(Map<String, dynamic> json) {\n');
     fields.keys.forEach((k) {
@@ -188,7 +164,7 @@ class ClassDefinition {
   }
 
   String get _jsonGenFunc {
-    var sb = new StringBuffer();
+    final sb = new StringBuffer();
     sb.write('\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
     fields.keys.forEach((k) {
       sb.write('\t\t${fields[k].toJsonExpression(k)}\n');
@@ -199,7 +175,7 @@ class ClassDefinition {
   }
 
   String toString() {
-    return 'class $name {\n$_fieldList\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+    return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
   }
 
 }
