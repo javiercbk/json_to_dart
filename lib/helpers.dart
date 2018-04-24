@@ -34,13 +34,17 @@ isPrimitiveType(String typeName) {
   return PRIMITIVE_TYPES[typeName];
 }
 
-String fixFieldName(String name, TypeDefinition typeDef) {
+String fixFieldName(String name, { TypeDefinition typeDef, bool privateField = false }) {
   var properName = name;
   if (name.startsWith('_') || name.startsWith(new RegExp(r'[0-9]'))) {
     final firstCharType = typeDef.name.substring(0, 1).toLowerCase();
     properName = '$firstCharType$name';
   }
-  return camelCaseFirstLower(properName);
+  final fieldName = camelCaseFirstLower(properName);
+  if (privateField) {
+    return '_$fieldName';
+  }
+  return fieldName;
 }
 
 String getTypeName(dynamic obj) {
