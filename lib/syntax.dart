@@ -1,5 +1,6 @@
 import './helpers.dart';
 
+
 class TypeDefinition {
   String name;
   String subtype;
@@ -40,9 +41,9 @@ class TypeDefinition {
     return '$expression.toJson()';
   }
 
-  String jsonParseExpression(String key) {
+  String jsonParseExpression(String key, bool privateField) {
     final jsonKey = "json['$key']";
-    final fieldKey = fixFieldName(key, this);
+    final fieldKey = fixFieldName(key, typeDef: this, privateField: privateField);
     if (isPrimitive) {
         return "$fieldKey = json['$key'];";
     } else if (name.contains('List')) {
@@ -54,8 +55,8 @@ class TypeDefinition {
     }
   }
 
-  String toJsonExpression(String key) {
-    final fieldKey = fixFieldName(key, this);
+  String toJsonExpression(String key, bool privateField) {
+    final fieldKey = fixFieldName(key, typeDef: this, privateField: privateField);
     final thisKey = 'this.$fieldKey';
     if (isPrimitive) {
       return "data['$key'] = $thisKey;";  
@@ -84,9 +85,11 @@ class Dependency {
 
 class ClassDefinition {
   final String _name;
+  final bool _privateFields;
   final Map<String, TypeDefinition> fields = new Map<String, TypeDefinition>();
 
   String get name => _name;
+  bool get privateFields => _privateFields;
 
   List<Dependency> get dependencies {
     final dependenciesList = new List<Dependency>();
@@ -99,7 +102,7 @@ class ClassDefinition {
     return dependenciesList;
   }
 
-  ClassDefinition(this._name);
+  ClassDefinition(this._name, [this._privateFields = false]);
 
   hasField(TypeDefinition otherField) {
     return fields.keys.firstWhere((k) => fields[k] == otherField, orElse: () => null) != null;
@@ -120,18 +123,65 @@ class ClassDefinition {
     ) == null;
   }
 
+  void _addTypeDef(TypeDefinition typeDef, StringBuffer sb) {
+    sb.write('${typeDef.name}');
+    if (typeDef.subtype != null) {
+      sb.write('<${typeDef.subtype}>');
+    }
+  }
+
   String get _fieldList {
     return fields.keys.map((key) {
       final f = fields[key];
-      final fieldName = fixFieldName(key, f);
+      final fieldName = fixFieldName(key, typeDef: f, privateField: privateFields);
       final sb = new StringBuffer();
-      sb.write('\t${f.name}');
-      if (f.subtype != null) {
-        sb.write('<${f.subtype}>');
-      }
+      sb.write('\t');
+      _addTypeDef(f, sb);
       sb.write(' $fieldName;');
       return sb.toString();
     }).join('\n');
+  }
+
+  String get _gettersSetters {
+    return fields.keys.map((key) {
+      final f = fields[key];
+      final publicFieldName = fixFieldName(key, typeDef: f, privateField: false);
+      final privateFieldName = fixFieldName(key, typeDef: f, privateField: true);
+      final sb = new StringBuffer();
+      sb.write('\t');
+      _addTypeDef(f, sb);
+      sb.write(' get $publicFieldName => $privateFieldName;\n\tset $publicFieldName(');
+      _addTypeDef(f, sb);
+      sb.write(' $publicFieldName) => $privateFieldName = $publicFieldName;');
+      return sb.toString();
+    }).join('\n');
+  }
+
+  String get _defaultPrivateConstructor {
+    final sb = new StringBuffer();
+    sb.write('\t$name({');
+    var i = 0;
+    var len = fields.keys.length - 1;
+    fields.keys.forEach((key) {
+      final f = fields[key];
+      final publicFieldName = fixFieldName(key, typeDef: f, privateField: false);
+      final privateFieldName = fixFieldName(key, typeDef: f, privateField: true);
+      _addTypeDef(f, sb);
+      sb.write(' $publicFieldName');
+      if (i != len) {
+        sb.write(', ');
+      }
+      i++;
+    });
+    sb.write('}) {\n');
+    fields.keys.forEach((key) {
+      final f = fields[key];
+      final publicFieldName = fixFieldName(key, typeDef: f, privateField: false);
+      final privateFieldName = fixFieldName(key, typeDef: f, privateField: true);
+      sb.write('this.$privateFieldName = $publicFieldName;\n');
+    });
+    sb.write('}');
+    return sb.toString();
   }
 
   String get _defaultConstructor {
@@ -141,7 +191,7 @@ class ClassDefinition {
     var len = fields.keys.length - 1;
     fields.keys.forEach((key) {
       final f = fields[key];
-      final fieldName = fixFieldName(key, f);
+      final fieldName = fixFieldName(key, typeDef: f, privateField: privateFields);
       sb.write('this.$fieldName');
       if (i != len) {
         sb.write(', ');
@@ -157,7 +207,7 @@ class ClassDefinition {
     sb.write('\t$name');
     sb.write('.fromJson(Map<String, dynamic> json) {\n');
     fields.keys.forEach((k) {
-      sb.write('\t\t${fields[k].jsonParseExpression(k)}\n');
+      sb.write('\t\t${fields[k].jsonParseExpression(k, privateFields)}\n');
     });
     sb.write('\t}');
     return sb.toString();
@@ -167,7 +217,7 @@ class ClassDefinition {
     final sb = new StringBuffer();
     sb.write('\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
     fields.keys.forEach((k) {
-      sb.write('\t\t${fields[k].toJsonExpression(k)}\n');
+      sb.write('\t\t${fields[k].toJsonExpression(k, privateFields)}\n');
     });
     sb.write('\t\treturn data;\n');
     sb.write('\t}');
@@ -175,7 +225,11 @@ class ClassDefinition {
   }
 
   String toString() {
-    return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+    if (privateFields) {
+      return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+    } else {
+      return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+    }
   }
 
 }

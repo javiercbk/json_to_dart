@@ -1,11 +1,13 @@
+import 'package:dart_style/dart_style.dart';
 import './helpers.dart';
 import './syntax.dart';
 
 class ModelGenerator {
   final String _rootClassName;
+  final bool _privateFields;
   List<ClassDefinition> allClasses = new List<ClassDefinition>();
   
-  ModelGenerator(this._rootClassName);
+  ModelGenerator(this._rootClassName, [this._privateFields = false]);
   
   _generateClassDefinition(String className, Map<String, dynamic> jsonRawData) {
     if (jsonRawData is List) {
@@ -13,7 +15,7 @@ class ModelGenerator {
       _generateClassDefinition(className, jsonRawData[0]);
     } else {
       final keys = jsonRawData.keys;
-      ClassDefinition classDefinition = new ClassDefinition(className);
+      ClassDefinition classDefinition = new ClassDefinition(className, _privateFields);
       keys.forEach((key) {
         final typeDef = new TypeDefinition.fromDynamic(jsonRawData[key]);
         if (typeDef.name.contains('Class')) {
@@ -44,6 +46,7 @@ class ModelGenerator {
   String generateDartClasses(String rawJson) {
     final Map<String, dynamic> jsonRawData = decodeJSON(rawJson);
     _generateClassDefinition(_rootClassName, jsonRawData);
-    return allClasses.map((c) => c.toString()).join('\n');
+    final formatter = new DartFormatter();
+    return formatter.format(allClasses.map((c) => c.toString()).join('\n'));
   }
 }

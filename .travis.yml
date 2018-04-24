@@ -3,7 +3,7 @@ sudo: false
 
 dart:
   - dev
-  - stable
+  # - stable
 
 dart_task:
   - test: --platform vm

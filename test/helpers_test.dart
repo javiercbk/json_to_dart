@@ -28,8 +28,10 @@ void main() {
     });
 
     test("fixFieldName should avoid offending variable names", () {
-      expect(fixFieldName('48x48', new TypeDefinition('String')), equals('s48x48'));
-      expect(fixFieldName('_avoidPrivate', new TypeDefinition('String')), equals('sAvoidPrivate'));
+      expect(fixFieldName('48x48', typeDef: new TypeDefinition('String'), privateField: false), equals('s48x48'));
+      expect(fixFieldName('_avoidPrivate', typeDef: new TypeDefinition('String'), privateField: false), equals('sAvoidPrivate'));
+      expect(fixFieldName('48x48', typeDef: new TypeDefinition('String'), privateField: true), equals('_s48x48'));
+      expect(fixFieldName('_avoidPrivate', typeDef: new TypeDefinition('String'), privateField: true), equals('_sAvoidPrivate'));
     });
   });
 }
