@@ -28,8 +28,11 @@ class TypeDefinition {
 
   bool get isPrimitiveList => _isPrimitive && name.contains('List');
 
-  operator ==(TypeDefinition other) {
-    return name == other.name && subtype == other.subtype;
+  operator ==(dynamic other) {
+    if (other is TypeDefinition) {
+      return name == other.name && subtype == other.subtype;
+    }
+    return false;
   }
 
   String _buildParseClass(String expression) {
@@ -112,15 +115,18 @@ class ClassDefinition {
     fields[name] = typeDef;
   }
 
-  operator ==(ClassDefinition other) {
-    if (name != other.name) {
-      return false;
+  operator ==(dynamic other) {
+    if (other is ClassDefinition) {
+      if (name != other.name) {
+        return false;
+      }
+      return fields.keys.firstWhere(
+        (k) => other.fields.keys.firstWhere(
+          (ok) => fields[k] == other.fields[ok], orElse: () => null
+        ) == null, orElse: () => null
+      ) == null;
     }
-    return fields.keys.firstWhere(
-      (k) => other.fields.keys.firstWhere(
-        (ok) => fields[k] == other.fields[ok], orElse: () => null
-      ) == null, orElse: () => null
-    ) == null;
+    return false;
   }
 
   void _addTypeDef(TypeDefinition typeDef, StringBuffer sb) {
