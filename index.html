@@ -28,12 +28,14 @@
                         <label for="json">JSON</label>
                         <textarea class="form-control" id="json" rows="3"></textarea>
                     </div>
-                    <label><input type="checkbox" id="private-fields"> Use private fields</label>
                     <button type="submit" class="btn btn-primary">Generate Dart</button>
+                    <label><input type="checkbox" id="private-fields"> Use private fields</label>
+                    <button id="copy-clipboard" class="mt-2 btn btn-secondary" disabled>Copy Dart code to clipboard</button>
                 </form>
             </div>
             <div class="col-12 col-md-8">
                 <pre><code class="dart"></code></pre>
+                <textarea style="position:fixed;opacity: 0;" id="hidden-dart"></textarea>
             </div>
         </div>
         <footer class="my-5 pt-5 text-muted text-center text-small">
