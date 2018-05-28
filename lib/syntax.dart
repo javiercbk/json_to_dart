@@ -10,7 +10,13 @@ class TypeDefinition {
     final type = getTypeName(obj);
     if (type == 'List') {
       List<dynamic> list = obj;
-      final firstElementType = getTypeName(list[0]);
+      String firstElementType;
+      if (list.length > 0) {
+        firstElementType = getTypeName(list[0]);
+      } else {
+        // when array is empty insert Null just to warn the user
+        firstElementType = "Null";
+      }
       return new TypeDefinition(type, subtype: firstElementType);
     }
     return new TypeDefinition(type);

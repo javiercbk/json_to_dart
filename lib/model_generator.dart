@@ -32,7 +32,10 @@ class ModelGenerator {
       final dependencies = classDefinition.dependencies;
       dependencies.forEach((dependency) {
         if (dependency.typeDef.name == 'List') {
-          _generateClassDefinition(dependency.className, jsonRawData[dependency.name][0]);
+          if (jsonRawData[dependency.name].length > 0) {
+            // only generate dependency class if the array is not empty
+            _generateClassDefinition(dependency.className, jsonRawData[dependency.name][0]);
+          }
         } else {
           _generateClassDefinition(dependency.className, jsonRawData[dependency.name]);
         }
