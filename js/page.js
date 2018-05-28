@@ -39373,6 +39373,12 @@
     camelCase: function(text) {
       return J.splitMapJoin$3$onMatch$onNonMatch$s(text, P.RegExp_RegExp("[a-zA-Z0-9]+", true, false), new Q.camelCase_capitalize(), new Q.camelCase_skip());
     },
+    isPrimitiveType: function(typeName) {
+      var isPrimitive = C.Map_UMi1I.$index(0, typeName);
+      if (isPrimitive == null)
+        return false;
+      return isPrimitive;
+    },
     fixFieldName: function($name, privateField, typeDef) {
       var t1, camelCaseText, fieldName;
       t1 = J.getInterceptor$s($name);
@@ -39509,13 +39515,16 @@
       "^": "Closure:1;$this,jsonRawData",
       call$1: function(dependency) {
         var t1, t2, t3;
-        t1 = J.getInterceptor$x(dependency);
-        t2 = this.$this;
-        t3 = this.jsonRawData;
-        if (J.$eq$(J.get$name$x(dependency.get$typeDef()), "List"))
-          t2._generateClassDefinition$2(t1.get$className(dependency), J.$index$asx(J.$index$asx(t3, t1.get$name(dependency)), 0));
-        else
-          t2._generateClassDefinition$2(t1.get$className(dependency), J.$index$asx(t3, t1.get$name(dependency)));
+        if (J.$eq$(J.get$name$x(dependency.get$typeDef()), "List")) {
+          t1 = this.jsonRawData;
+          t2 = J.getInterceptor$x(dependency);
+          t3 = J.getInterceptor$asx(t1);
+          if (J.$gt$n(J.get$length$asx(t3.$index(t1, t2.get$name(dependency))), 0))
+            this.$this._generateClassDefinition$2(t2.get$className(dependency), J.$index$asx(t3.$index(t1, t2.get$name(dependency)), 0));
+        } else {
+          t1 = J.getInterceptor$x(dependency);
+          this.$this._generateClassDefinition$2(t1.get$className(dependency), J.$index$asx(this.jsonRawData, t1.get$name(dependency)));
+        }
       }
     },
     ModelGenerator_generateDartClasses_closure: {
@@ -39589,9 +39598,9 @@
         t1 = this.subtype;
         t2 = this.name;
         if (t1 == null)
-          this._isPrimitive = C.Map_UMi1I.$index(0, t2);
+          this._isPrimitive = Q.isPrimitiveType(t2);
         else
-          this._isPrimitive = C.Map_UMi1I.$index(0, H.S(t2) + "<" + H.S(this.subtype) + ">");
+          this._isPrimitive = Q.isPrimitiveType(H.S(t2) + "<" + H.S(this.subtype) + ">");
       },
       get$isPrimitive: function() {
         return this._isPrimitive;
@@ -39618,7 +39627,7 @@
         var jsonKey, fieldKey, t1, properType;
         jsonKey = "json['" + H.S(key) + "']";
         fieldKey = Q.fixFieldName(key, privateField, this);
-        if (this._isPrimitive === true)
+        if (this._isPrimitive)
           return fieldKey + " = json['" + H.S(key) + "'];";
         else if (J.contains$1$asx(this.name, "List"))
           return "if (json['" + H.S(key) + "'] != null) {\n\t\t\t" + fieldKey + " = new List<" + H.S(this.subtype) + ">();\n\t\t\tjson['" + H.S(key) + "'].forEach((v) { " + fieldKey + ".add(new " + H.S(this.subtype) + ".fromJson(v)); });\n\t\t}";
@@ -39630,7 +39639,7 @@
       },
       toJsonExpression$2: function(key, privateField) {
         var thisKey = "this." + Q.fixFieldName(key, privateField, this);
-        if (this._isPrimitive === true)
+        if (this._isPrimitive)
           return "data['" + H.S(key) + "'] = " + thisKey + ";";
         else if (this.name === "List")
           return "if (" + thisKey + " != null) {\n      data['" + H.S(key) + "'] = " + thisKey + ".map((v) => v.toJson()).toList();\n    }";
@@ -39639,9 +39648,12 @@
       },
       static: {
         TypeDefinition_TypeDefinition$fromDynamic: function(obj) {
-          var type = Q.getTypeName(obj);
-          if (type === "List")
-            return M.TypeDefinition$(type, Q.getTypeName(J.$index$asx(obj, 0)));
+          var type, t1;
+          type = Q.getTypeName(obj);
+          if (type === "List") {
+            t1 = J.getInterceptor$asx(obj);
+            return M.TypeDefinition$(type, J.$gt$n(t1.get$length(obj), 0) ? Q.getTypeName(t1.$index(obj, 0)) : "Null");
+          }
           return M.TypeDefinition$(type, null);
         },
         TypeDefinition$: function($name, subtype) {
@@ -39753,7 +39765,7 @@
       "^": "Closure:1;$this,dependenciesList",
       call$1: function(k) {
         var t1 = this.$this.fields;
-        if (t1.$index(0, k).get$isPrimitive() !== true)
+        if (!t1.$index(0, k).get$isPrimitive())
           this.dependenciesList.push(new M.Dependency(k, t1.$index(0, k)));
       }
     },
