@@ -31,7 +31,11 @@ decodeJSON(String rawJson) {
 }
 
 isPrimitiveType(String typeName) {
-  return PRIMITIVE_TYPES[typeName];
+  final isPrimitive = PRIMITIVE_TYPES[typeName];
+  if (isPrimitive == null) {
+    return false;
+  }
+  return isPrimitive;
 }
 
 String fixFieldName(String name, { TypeDefinition typeDef, bool privateField = false }) {
