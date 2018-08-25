@@ -10,6 +10,7 @@ void main() {
   final CheckboxInputElement usePrivateFieldsCheckbox = document.querySelector('#private-fields');
   final ButtonElement copyClipboardButton = document.querySelector('#copy-clipboard');
   final TextAreaElement hiddenElement = document.querySelector('#hidden-dart');
+  final Element boldElement = document.querySelector('#invalid-dart');
   copyClipboardButton.onClick.listen((MouseEvent event) {
    event.preventDefault();
    event.stopPropagation();
@@ -22,6 +23,7 @@ void main() {
     event.preventDefault();
     event.stopPropagation();
     var syntaxError = false;
+    var invalidDart = false;
     final json = textArea.value;
     try {
       Convert.json.decode(json);
@@ -34,9 +36,22 @@ void main() {
       String dartCode;
       try {
         dartCode = modelGenerator.generateDartClasses(json);
+        boldElement.style.display = 'none';
       } catch (e) {
-        window.alert('There was a library error generating the dart code');
-        print(e);
+        invalidDart = true;
+      }
+      if (invalidDart) {
+        try {
+          dartCode = modelGenerator.generateUnsafeDart(json);
+        } catch (e) {
+          window.alert('Cannot generate dart code. Please check the project caveats.');
+          hiddenElement.value = '';
+          highlightedDartCode.text = '';
+          copyClipboardButton.attributes.putIfAbsent('disabled', () => 'disabled');
+          print(e);
+          return;
+        }
+        boldElement.style.display = 'block';
       }
       hiddenElement.value = dartCode;
       highlightedDartCode.text = dartCode;

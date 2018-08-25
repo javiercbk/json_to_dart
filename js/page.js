@@ -3898,7 +3898,7 @@
       }
     },
     BoundClosure: {
-      "^": "TearOffClosure;_self,_target,_receiver,_name",
+      "^": "TearOffClosure;_self,__js_helper$_target,_receiver,_name",
       $eq: function(_, other) {
         if (other == null)
           return false;
@@ -3906,7 +3906,7 @@
           return true;
         if (!(other instanceof H.BoundClosure))
           return false;
-        return this._self === other._self && this._target === other._target && this._receiver === other._receiver;
+        return this._self === other._self && this.__js_helper$_target === other.__js_helper$_target && this._receiver === other._receiver;
       },
       get$hashCode: function(_) {
         var t1, receiverHashCode;
@@ -3915,7 +3915,7 @@
           receiverHashCode = H.Primitives_objectHashCode(this._self);
         else
           receiverHashCode = typeof t1 !== "object" ? J.get$hashCode$(t1) : H.Primitives_objectHashCode(t1);
-        return (receiverHashCode ^ H.Primitives_objectHashCode(this._target)) >>> 0;
+        return (receiverHashCode ^ H.Primitives_objectHashCode(this.__js_helper$_target)) >>> 0;
       },
       toString$0: function(_) {
         var receiver = this._receiver;
@@ -8716,6 +8716,14 @@
     },
     _AttributeMap: {
       "^": "MapBase;",
+      putIfAbsent$2: function(key, ifAbsent) {
+        var t1;
+        H.functionTypeCheck(ifAbsent, {func: 1, ret: P.String});
+        t1 = this._element;
+        if (!t1.hasAttribute(key))
+          t1.setAttribute(key, H.stringTypeCheck(ifAbsent.call$0()));
+        return t1.getAttribute(key);
+      },
       forEach$1: function(_, f) {
         var t1, t2, t3, _i, key;
         H.functionTypeCheck(f, {func: 1, ret: -1, args: [P.String, P.String]});
@@ -8772,33 +8780,33 @@
         var t1 = H.getTypeArgumentByIndex(this, 0);
         H.functionTypeCheck(onData, {func: 1, ret: -1, args: [t1]});
         H.functionTypeCheck(onDone, {func: 1, ret: -1});
-        return W._EventStreamSubscription$(this._html$_target, this._eventType, onData, false, t1);
+        return W._EventStreamSubscription$(this._target, this._eventType, onData, false, t1);
       }
     },
     _ElementEventStreamImpl: {
-      "^": "_EventStream;_html$_target,_eventType,_useCapture,$ti"
+      "^": "_EventStream;_target,_eventType,_useCapture,$ti"
     },
     _EventStreamSubscription: {
-      "^": "StreamSubscription;_pauseCount,_html$_target,_eventType,_onData,_useCapture,$ti",
+      "^": "StreamSubscription;_pauseCount,_target,_eventType,_onData,_useCapture,$ti",
       cancel$0: function() {
-        if (this._html$_target == null)
+        if (this._target == null)
           return;
         this._unlisten$0();
-        this._html$_target = null;
+        this._target = null;
         this._onData = null;
         return;
       },
       _tryResume$0: function() {
         var t1 = this._onData;
         if (t1 != null && this._pauseCount <= 0)
-          J.addEventListener$3$x(this._html$_target, this._eventType, t1, false);
+          J.addEventListener$3$x(this._target, this._eventType, t1, false);
       },
       _unlisten$0: function() {
         var t1, t2, t3;
         t1 = this._onData;
         t2 = t1 != null;
         if (t2) {
-          t3 = this._html$_target;
+          t3 = this._target;
           t3.toString;
           H.functionTypeCheck(t1, {func: 1, args: [W.Event]});
           if (t2)
@@ -32800,90 +32808,13 @@
           C.JSArray_methods.add$1(t1, classDefinition);
         C.JSArray_methods.forEach$1(classDefinition.get$dependencies(), new A.ModelGenerator__generateClassDefinition_closure2(this, jsonRawData));
       },
-      generateDartClasses$1: function(rawJson) {
-        var t1, t2, formatter, t3, t4, errorListener, reader, stringSource, scanner, startToken, t5, parser, node, visitor, t6, t7, t8, t9, t10, result, selectionStart, selectionEnd, selectionLength, output;
+      generateUnsafeDart$1: function(rawJson) {
+        var t1, t2, t3;
         t1 = P.String;
         this._generateClassDefinition$2(this._rootClassName, H.assertSubtype(C.JsonCodec_null_null.decode$1(0, rawJson), "$isMap", [t1, null], "$asMap"));
-        t2 = P.LinkedHashSet_LinkedHashSet(null, null, null, Q.StyleFix);
-        formatter = new U.DartFormatter(null, 80, 0, t2);
-        t3 = this.allClasses;
-        t4 = H.getTypeArgumentByIndex(t3, 0);
-        t1 = new H.MappedListIterable(t3, H.functionTypeCheck(new A.ModelGenerator_generateDartClasses_closure(), {func: 1, ret: t1, args: [t4]}), [t4, t1]).join$1(0, "\n");
-        t1 = A.SourceCode$(t1, true, null, null, null);
-        errorListener = new Y.ErrorListener(H.setRuntimeTypeInfo([], [V.AnalysisError]));
-        t3 = t1.text;
-        reader = D.CharSequenceReader$(t3);
-        stringSource = new O.StringSource(t3, t1.uri, null, Date.now());
-        scanner = Z.Scanner_Scanner$fasta(stringSource, errorListener, reader.getContents$0(), reader.get$offset(reader));
-        startToken = scanner.tokenize$0();
-        t4 = scanner.lineStarts;
-        if (t4.length < 1)
-          H.throwExpression(P.ArgumentError$("lineStarts must be non-empty"));
-        if (t4.length > 1)
-          if (J.$ge$n(t4[1], 2)) {
-            if (1 >= t4.length)
-              return H.ioore(t4, 1);
-            t5 = J.$sub$n(t4[1], 2);
-            if (t5 >>> 0 !== t5 || t5 >= t3.length)
-              return H.ioore(t3, t5);
-            t5 = t3[t5] === "\r";
-          } else
-            t5 = false;
-        else
-          t5 = false;
-        if (t5)
-          formatter.lineEnding = "\r\n";
-        else
-          formatter.lineEnding = "\n";
-        errorListener.throwIfErrors$0();
-        parser = X.Parser_Parser(stringSource, errorListener, null);
-        parser.set$enableOptionalNewAndConst(true);
-        node = parser.parseCompilationUnit$1(startToken);
-        errorListener.throwIfErrors$0();
-        visitor = new F.SourceVisitor(formatter, new E.LineInfo(t4, 0), t1, false, false, 0, H.setRuntimeTypeInfo([], [P.bool]), H.setRuntimeTypeInfo([], [O.MetadataRule]), P.LinkedHashMap_LinkedHashMap$_empty(L.Token, B.ArgumentSublist));
-        t4 = O.Rule;
-        t5 = [t4];
-        t6 = H.setRuntimeTypeInfo([], t5);
-        t4 = P.LinkedHashSet_LinkedHashSet(null, null, null, t4);
-        t5 = H.setRuntimeTypeInfo([], t5);
-        t7 = H.setRuntimeTypeInfo([], [E.OpenSpan]);
-        t8 = H.setRuntimeTypeInfo([0], [P.int]);
-        t9 = $.FastHash__nextId + 1 & 268435455;
-        $.FastHash__nextId = t9;
-        t9 = new F.NestingBuilder(t8, new M.NestingLevel(null, 0, t9));
-        t8 = H.setRuntimeTypeInfo([], [M.NestingLevel]);
-        t10 = H.setRuntimeTypeInfo([], [E.Chunk]);
-        t9.indent$1(0);
-        C.JSArray_methods.add$1(t8, t9.get$currentNesting());
-        visitor.builder = new S.ChunkBuilder(formatter, null, t1, t10, C.Whitespace_none, t6, t4, t5, t7, t9, t8, false, 0);
-        visitor.visit$1(node);
-        visitor.writePrecedingCommentsAndNewlines$1(node.endToken.next);
-        t8 = visitor.builder;
-        t8._writeHardSplit$0();
-        t8._divideChunks$0();
-        if ($.traceChunkBuilder) {
-          A.log(H.S($.$get$_green()) + "\nBuilt:" + H.S($.$get$_none()));
-          A.dumpChunks(0, t8._chunks);
-          A.log(null);
-        }
-        t1 = t8._formatter;
-        t4 = new P.StringBuffer("");
-        result = new A.LineWriter(t4, t8._chunks, t1.lineEnding, t1.pageWidth, 0, P.LinkedHashMap_LinkedHashMap$_empty(A._BlockKey, A.FormatResult)).writeLines$2$isCompilationUnit(t1.indent, true);
-        t1 = t8._source;
-        if (t1.selectionStart != null) {
-          selectionStart = result.selectionStart;
-          selectionEnd = result.selectionEnd;
-          if (selectionStart == null)
-            selectionStart = t4._contents.length;
-          selectionLength = (selectionEnd == null ? t4._contents.length : selectionEnd) - selectionStart;
-        } else {
-          selectionStart = null;
-          selectionLength = null;
-        }
-        output = A.SourceCode$(result.text, true, selectionLength, selectionStart, t1.uri);
-        if (t2._length === 0 && !M.equalIgnoringWhitespace(t3, output.text))
-          H.throwExpression(new A.UnexpectedOutputException(t3, output.text));
-        return output.text;
+        t2 = this.allClasses;
+        t3 = H.getTypeArgumentByIndex(t2, 0);
+        return new H.MappedListIterable(t2, H.functionTypeCheck(new A.ModelGenerator_generateUnsafeDart_closure(), {func: 1, ret: t1, args: [t3]}), [t3, t1]).join$1(0, "\n");
       }
     },
     ModelGenerator__generateClassDefinition_closure: {
@@ -32925,7 +32856,7 @@
           this.$this._generateClassDefinition$2(Q.camelCase(dependency.name), H.assertSubtype(this.jsonRawData.$index(0, dependency.name), "$isMap", [P.String, null], "$asMap"));
       }
     },
-    ModelGenerator_generateDartClasses_closure: {
+    ModelGenerator_generateUnsafeDart_closure: {
       "^": "Closure:61;",
       call$1: [function(c) {
         return J.toString$0$(H.interceptedTypeCheck(c, "$isClassDefinition"));
@@ -32934,7 +32865,7 @@
   }], ["", "page.dart",, V, {
     "^": "",
     main: function() {
-      var t1, convertButton, textArea, highlightedDartCode, usePrivateFieldsCheckbox, copyClipboardButton, hiddenElement, t2;
+      var t1, convertButton, textArea, highlightedDartCode, usePrivateFieldsCheckbox, copyClipboardButton, hiddenElement, boldElement, t2;
       t1 = document;
       convertButton = H.interceptedTypeCheck(t1.querySelector('button[type="submit"]'), "$isButtonElement");
       textArea = H.interceptedTypeCheck(t1.querySelector("textarea"), "$isTextAreaElement");
@@ -32942,12 +32873,13 @@
       usePrivateFieldsCheckbox = H.interceptedTypeCheck(t1.querySelector("#private-fields"), "$isCheckboxInputElement");
       copyClipboardButton = H.interceptedTypeCheck(t1.querySelector("#copy-clipboard"), "$isButtonElement");
       hiddenElement = H.interceptedTypeCheck(t1.querySelector("#hidden-dart"), "$isTextAreaElement");
+      boldElement = t1.querySelector("#invalid-dart");
       copyClipboardButton.toString;
       t1 = W.MouseEvent;
       t2 = {func: 1, ret: -1, args: [t1]};
       W._EventStreamSubscription$(copyClipboardButton, "click", H.functionTypeCheck(new V.main_closure(copyClipboardButton, hiddenElement), t2), false, t1);
       convertButton.toString;
-      W._EventStreamSubscription$(convertButton, "click", H.functionTypeCheck(new V.main_closure0(textArea, usePrivateFieldsCheckbox, hiddenElement, highlightedDartCode, copyClipboardButton), t2), false, t1);
+      W._EventStreamSubscription$(convertButton, "click", H.functionTypeCheck(new V.main_closure0(textArea, usePrivateFieldsCheckbox, boldElement, hiddenElement, highlightedDartCode, copyClipboardButton), t2), false, t1);
     },
     main_closure: {
       "^": "Closure:23;copyClipboardButton,hiddenElement",
@@ -32962,13 +32894,14 @@
       }
     },
     main_closure0: {
-      "^": "Closure:23;textArea,usePrivateFieldsCheckbox,hiddenElement,highlightedDartCode,copyClipboardButton",
+      "^": "Closure:23;textArea,usePrivateFieldsCheckbox,boldElement,hiddenElement,highlightedDartCode,copyClipboardButton",
       call$1: function($event) {
-        var syntaxError, json, modelGenerator, dartCode, e, exception, t1, t2;
+        var syntaxError, invalidDart, json, modelGenerator, dartCode, e, exception, unsafeDart, t1, formatter, t2, errorListener, t3, reader, stringSource, scanner, startToken, t4, t5, parser, node, visitor, t6, t7, t8, t9, t10, result, selectionStart, selectionEnd, selectionLength, output;
         H.interceptedTypeCheck($event, "$isMouseEvent");
         $event.preventDefault();
         $event.stopPropagation();
         syntaxError = false;
+        invalidDart = false;
         json = this.textArea.value;
         try {
           C.JsonCodec_null_null.decode$1(0, json);
@@ -32981,11 +32914,106 @@
           modelGenerator = new A.ModelGenerator("Autogenerated", this.usePrivateFieldsCheckbox.checked, H.setRuntimeTypeInfo([], [M.ClassDefinition]));
           dartCode = null;
           try {
-            dartCode = modelGenerator.generateDartClasses$1(json);
+            unsafeDart = modelGenerator.generateUnsafeDart$1(H.stringTypeCheck(json));
+            t1 = P.LinkedHashSet_LinkedHashSet(null, null, null, Q.StyleFix);
+            formatter = new U.DartFormatter(null, 80, 0, t1);
+            t2 = A.SourceCode$(unsafeDart, true, null, null, null);
+            errorListener = new Y.ErrorListener(H.setRuntimeTypeInfo([], [V.AnalysisError]));
+            t3 = t2.text;
+            reader = D.CharSequenceReader$(t3);
+            stringSource = new O.StringSource(t3, t2.uri, null, Date.now());
+            scanner = Z.Scanner_Scanner$fasta(stringSource, errorListener, reader.getContents$0(), reader.get$offset(reader));
+            startToken = scanner.tokenize$0();
+            t4 = scanner.lineStarts;
+            if (t4.length < 1)
+              H.throwExpression(P.ArgumentError$("lineStarts must be non-empty"));
+            if (t4.length > 1)
+              if (J.$ge$n(t4[1], 2)) {
+                if (1 >= t4.length)
+                  return H.ioore(t4, 1);
+                t5 = J.$sub$n(t4[1], 2);
+                if (t5 >>> 0 !== t5 || t5 >= t3.length)
+                  return H.ioore(t3, t5);
+                t5 = t3[t5] === "\r";
+              } else
+                t5 = false;
+            else
+              t5 = false;
+            if (t5)
+              formatter.lineEnding = "\r\n";
+            else
+              formatter.lineEnding = "\n";
+            errorListener.throwIfErrors$0();
+            parser = X.Parser_Parser(stringSource, errorListener, null);
+            parser.set$enableOptionalNewAndConst(true);
+            node = parser.parseCompilationUnit$1(startToken);
+            errorListener.throwIfErrors$0();
+            visitor = new F.SourceVisitor(formatter, new E.LineInfo(t4, 0), t2, false, false, 0, H.setRuntimeTypeInfo([], [P.bool]), H.setRuntimeTypeInfo([], [O.MetadataRule]), P.LinkedHashMap_LinkedHashMap$_empty(L.Token, B.ArgumentSublist));
+            t4 = O.Rule;
+            t5 = [t4];
+            t6 = H.setRuntimeTypeInfo([], t5);
+            t4 = P.LinkedHashSet_LinkedHashSet(null, null, null, t4);
+            t5 = H.setRuntimeTypeInfo([], t5);
+            t7 = H.setRuntimeTypeInfo([], [E.OpenSpan]);
+            t8 = H.setRuntimeTypeInfo([0], [P.int]);
+            t9 = $.FastHash__nextId + 1 & 268435455;
+            $.FastHash__nextId = t9;
+            t9 = new F.NestingBuilder(t8, new M.NestingLevel(null, 0, t9));
+            t8 = H.setRuntimeTypeInfo([], [M.NestingLevel]);
+            t10 = H.setRuntimeTypeInfo([], [E.Chunk]);
+            t9.indent$1(0);
+            C.JSArray_methods.add$1(t8, t9.get$currentNesting());
+            visitor.builder = new S.ChunkBuilder(formatter, null, t2, t10, C.Whitespace_none, t6, t4, t5, t7, t9, t8, false, 0);
+            visitor.visit$1(node);
+            visitor.writePrecedingCommentsAndNewlines$1(node.endToken.next);
+            t8 = visitor.builder;
+            t8._writeHardSplit$0();
+            t8._divideChunks$0();
+            if ($.traceChunkBuilder) {
+              A.log(H.S($.$get$_green()) + "\nBuilt:" + H.S($.$get$_none()));
+              A.dumpChunks(0, t8._chunks);
+              A.log(null);
+            }
+            t2 = t8._formatter;
+            t4 = new P.StringBuffer("");
+            result = new A.LineWriter(t4, t8._chunks, t2.lineEnding, t2.pageWidth, 0, P.LinkedHashMap_LinkedHashMap$_empty(A._BlockKey, A.FormatResult)).writeLines$2$isCompilationUnit(t2.indent, true);
+            t2 = t8._source;
+            if (t2.selectionStart != null) {
+              selectionStart = result.selectionStart;
+              selectionEnd = result.selectionEnd;
+              if (selectionStart == null)
+                selectionStart = t4._contents.length;
+              selectionLength = (selectionEnd == null ? t4._contents.length : selectionEnd) - selectionStart;
+            } else {
+              selectionStart = null;
+              selectionLength = null;
+            }
+            output = A.SourceCode$(result.text, true, selectionLength, selectionStart, t2.uri);
+            if (t1._length === 0 && !M.equalIgnoringWhitespace(t3, output.text))
+              H.throwExpression(new A.UnexpectedOutputException(t3, output.text));
+            dartCode = output.text;
+            t1 = this.boldElement.style;
+            t1.display = "none";
           } catch (exception) {
-            e = H.unwrapException(exception);
-            window.alert("There was a library error generating the dart code");
-            P.print(e);
+            H.unwrapException(exception);
+            invalidDart = true;
+          }
+          if (invalidDart) {
+            try {
+              dartCode = modelGenerator.generateUnsafeDart$1(json);
+            } catch (exception) {
+              e = H.unwrapException(exception);
+              window.alert("Cannot generate dart code. Please check the project caveats.");
+              this.hiddenElement.value = "";
+              this.highlightedDartCode.textContent = "";
+              t1 = this.copyClipboardButton;
+              t1.toString;
+              new W._ElementAttributeMap(t1).putIfAbsent$2("disabled", new V.main__closure());
+              P.print(e);
+              return;
+            }
+            t1 = this.boldElement.style;
+            t1.display = "block";
           }
           this.hiddenElement.value = dartCode;
           t1 = this.highlightedDartCode;
@@ -32999,14 +33027,17 @@
           this.highlightedDartCode.textContent = "";
           t1 = this.copyClipboardButton;
           t1.toString;
-          t2 = H.functionTypeCheck(new V.main__closure(), {func: 1, ret: P.String});
-          if (!t1.hasAttribute("disabled"))
-            t1.setAttribute("disabled", H.stringTypeCheck(t2.call$0()));
-          t1.getAttribute("disabled");
+          new W._ElementAttributeMap(t1).putIfAbsent$2("disabled", new V.main__closure0());
         }
       }
     },
     main__closure: {
+      "^": "Closure:3;",
+      call$0: function() {
+        return "disabled";
+      }
+    },
+    main__closure0: {
       "^": "Closure:3;",
       call$0: function() {
         return "disabled";
