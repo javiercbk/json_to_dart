@@ -5,8 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "json_to_dart",
-            "program": "${workspaceFolder}/main.dart",
+            "name": "generate_bug_10",
+            "program": "${workspaceFolder}/example/generate_bug_10.dart",
             "request": "launch",
             "type": "dart"
         },
