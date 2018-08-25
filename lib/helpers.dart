@@ -27,7 +27,7 @@ String camelCaseFirstLower(String text) {
 }
 
 decodeJSON(String rawJson) {
-  return Convert.JSON.decode(rawJson);
+  return Convert.json.decode(rawJson);
 }
 
 isPrimitiveType(String typeName) {

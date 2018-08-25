@@ -32,7 +32,7 @@ class TypeDefinition {
 
   bool get isPrimitive => _isPrimitive;
 
-  bool get isPrimitiveList => _isPrimitive && name.contains('List');
+  bool get isPrimitiveList => _isPrimitive && name == 'List';
 
   operator ==(dynamic other) {
     if (other is TypeDefinition) {
@@ -54,8 +54,11 @@ class TypeDefinition {
     final jsonKey = "json['$key']";
     final fieldKey = fixFieldName(key, typeDef: this, privateField: privateField);
     if (isPrimitive) {
+        if (name == "List") {
+          return "$fieldKey = json['$key'].cast<$subtype>();";
+        }
         return "$fieldKey = json['$key'];";
-    } else if (name.contains('List')) {
+    } else if (name == 'List') {
       // list of class
       return "if (json['$key'] != null) {\n\t\t\t$fieldKey = new List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
     } else {
