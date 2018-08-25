@@ -50,6 +50,12 @@ class ModelGenerator {
     final Map<String, dynamic> jsonRawData = decodeJSON(rawJson);
     _generateClassDefinition(_rootClassName, jsonRawData);
     final formatter = new DartFormatter();
-    return formatter.format(allClasses.map((c) => c.toString()).join('\n'));
+    final unformattedDart = allClasses.map((c) => c.toString()).join('\n');
+    try {
+      final formatted = formatter.format(unformattedDart);
+      return formatted;
+    } catch (e) {
+      return unformattedDart;
+    }
   }
 }

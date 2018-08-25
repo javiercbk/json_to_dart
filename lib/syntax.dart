@@ -1,6 +1,5 @@
 import './helpers.dart';
 
-
 class TypeDefinition {
   String name;
   String subtype;

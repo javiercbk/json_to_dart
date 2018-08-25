@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "generate_bug_10",
-            "program": "${workspaceFolder}/example/generate_bug_10.dart",
+            "program": "${workspaceFolder}/example/generate_model_example.dart",
             "request": "launch",
             "type": "dart"
         },
