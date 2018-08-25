@@ -79,7 +79,6 @@ void main() {
       );
       final codec = new JsonCodec(toEncodable: (dynamic v) => v.toString());
       final encodedJSON = codec.encode(bugTen.toJson());
-      print(encodedJSON);
       expect(encodedJSON.contains('"title":"example glossary"'), equals(true));
       expect(encodedJSON.contains('"GlossDiv":{"title":"S"'), equals(true));
       expect(encodedJSON.contains('"GlossList":{"GlossEntry":{'), equals(true));
