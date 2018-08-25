@@ -18,10 +18,10 @@ class ModelGenerator {
       ClassDefinition classDefinition = new ClassDefinition(className, _privateFields);
       keys.forEach((key) {
         final typeDef = new TypeDefinition.fromDynamic(jsonRawData[key]);
-        if (typeDef.name.contains('Class')) {
+        if (typeDef.name == 'Class') {
           typeDef.name = camelCase(key);
         }
-        if (typeDef.subtype != null && typeDef.subtype.contains('Class')) {
+        if (typeDef.subtype != null && typeDef.subtype == 'Class') {
           typeDef.subtype = camelCase(key);
         }
         classDefinition.addField(key, typeDef);

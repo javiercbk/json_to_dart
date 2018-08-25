@@ -59,9 +59,9 @@ class Sample {
     _favouriteDouble = json['favouriteDouble'];
     _url = json['url'];
     _htmlUrl = json['html_url'];
-    _tags = json['tags'];
-    _randomIntegers = json['randomIntegers'];
-    _randomDoubles = json['randomDoubles'];
+    _tags = json['tags'].cast<String>();
+    _randomIntegers = json['randomIntegers'].cast<int>();
+    _randomDoubles = json['randomDoubles'].cast<double>();
     _personalInfo = json['personalInfo'] != null
         ? new PersonalInfo.fromJson(json['personalInfo'])
         : null;
