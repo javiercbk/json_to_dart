@@ -43,19 +43,22 @@ class ModelGenerator {
     }
   }
 
-  /// generateDartClasses will generate all classes and append one after another
+  /// generateUnsafeDart will generate all classes and append one after another
   /// in a single string. The [rawJson] param is assumed to be a properly
-  /// formatted JSON string.
-  String generateDartClasses(String rawJson) {
+  /// formatted JSON string. The dart code is not validated so invalid dart code
+  /// might be returned
+  String generateUnsafeDart(String rawJson) {
     final Map<String, dynamic> jsonRawData = decodeJSON(rawJson);
     _generateClassDefinition(_rootClassName, jsonRawData);
+    return allClasses.map((c) => c.toString()).join('\n');
+  }
+
+  /// generateDartClasses will generate all classes and append one after another
+  /// in a single string. The [rawJson] param is assumed to be a properly
+  /// formatted JSON string. If the generated dart is invalid it will throw an error.
+  String generateDartClasses(String rawJson) {
+    final unsafeDart = generateUnsafeDart(rawJson);
     final formatter = new DartFormatter();
-    final unformattedDart = allClasses.map((c) => c.toString()).join('\n');
-    try {
-      final formatted = formatter.format(unformattedDart);
-      return formatted;
-    } catch (e) {
-      return unformattedDart;
-    }
+    return formatter.format(unsafeDart);
   }
 }
