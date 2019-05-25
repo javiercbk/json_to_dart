@@ -6,6 +6,8 @@ const Map<String, bool> PRIMITIVE_TYPES = const {
   'double': true,
   'String': true,
   'bool': true,
+  'DateTime': false,
+  'List<DateTime>': false,
   'List<int>': true,
   'List<double>': true,
   'List<String>': true,
@@ -28,6 +30,75 @@ String camelCaseFirstLower(String text) {
 
 decodeJSON(String rawJson) {
   return Convert.json.decode(rawJson);
+}
+
+WithWarning<Map> mergeObj(Map obj, Map other, String path) {
+  List<Warning> warnings = new List<Warning>();
+  final Map clone = Map.from(obj);
+  other.forEach((k, v) {
+    if (clone[k] == null) {
+        clone[k] = v;
+    } else {
+      final String otherType = getTypeName(v);
+      final String t = getTypeName(clone[k]);
+      if (t != otherType) {
+        if (t == 'int' && otherType == 'double') {
+          // if double was found instead of int, assign the double
+          clone[k] = v;
+        } else if (clone[k].runtimeType != 'double' && v.runtimeType != 'int') {
+          // if types are not equal, then 
+          warnings.add(newAmbiguousType('$path/$k'));
+        }
+      } else if (t == 'List') {
+        List l = List.from(clone[k]);
+        l.addAll(other[k]);
+        WithWarning<Map> mergedList = mergeList(l, '$path/$k');
+        warnings.addAll(mergedList.warnings);
+        clone[k] = List.filled(1, mergedList.result);
+      } else if (t == 'Class') {
+        WithWarning<Map> mergedObj = mergeObj(clone[k], other[k], '$path/$k');
+        warnings.addAll(mergedObj.warnings);
+        clone[k] = mergedObj.result;
+      }
+    }
+  });
+  return new WithWarning(clone, warnings);
+}
+
+WithWarning<Map> mergeList(List<dynamic> list, String path) {
+  List<Warning> warnings = new List<Warning>();
+  Map obj = new Map();
+  for(var i = 0; i < list.length; i++) {
+    Map toMerge = list[i];
+    toMerge.forEach((k, v) {
+      if (obj[k] == null) {
+        obj[k] = v;
+      } else {
+        final String otherType = getTypeName(v);
+        final String t = getTypeName(obj[k]);
+        if (t != otherType) {
+          if (t == 'int' && otherType == 'double') {
+            // if double was found instead of int, assign the double
+            obj[k] = v;
+          } else if (t != 'double' && otherType != 'int') {
+            // if types are not equal, then 
+            warnings.add(newAmbiguousType('$path[$i]/$k'));
+          }
+        } else if (t == 'List') {
+          List l = List.from(obj[k]);
+          l.addAll(v);
+          WithWarning<Map> mergedList = mergeList(l, '$path[$i]/$k');
+          warnings.addAll(mergedList.warnings);
+          obj[k] = List.filled(1, mergedList.result);
+        } else if (t == 'Class') {
+          WithWarning<Map> mergedObj = mergeObj(obj[k], v, '$path[$i]/$k');
+          warnings.addAll(mergedObj.warnings);
+          obj[k] = mergedObj.result;
+        }
+      } 
+    });
+  }
+  return new WithWarning(obj, warnings);
 }
 
 isPrimitiveType(String typeName) {

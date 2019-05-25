@@ -1,44 +1,90 @@
 import './helpers.dart';
 
+const String emptyListWarn = "list is empty";
+const String ambiguousListWarn = "list is ambiguous";
+const String ambiguousTypeWarn = "type is amboguous";
+
+class Warning {
+  final String warning;
+  final String path;
+
+  Warning(this.warning, this.path);
+}
+
+Warning newEmptyListWarn(String path) {
+  return new Warning(emptyListWarn, path);
+}
+
+Warning newAmbiguousListWarn(String path) {
+  return new Warning(ambiguousListWarn, path);
+}
+
+Warning newAmbiguousType(String path) {
+  return new Warning(ambiguousTypeWarn, path);
+}
+
+class WithWarning<T> {
+  final T result;
+  final List<Warning> warnings;
+
+  WithWarning(this.result, this.warnings);
+}
+
 class TypeDefinition {
   String name;
   String subtype;
+  bool isAmbiguous = false;
   bool _isPrimitive = false;
 
   factory TypeDefinition.fromDynamic(dynamic obj) {
+    bool isAmbiguous = false;
     final type = getTypeName(obj);
     if (type == 'List') {
       List<dynamic> list = obj;
       String firstElementType;
       if (list.length > 0) {
-        firstElementType = getTypeName(list[0]);
+        String elemType = getTypeName(list[0]);
+        for (dynamic listVal in list) {
+          if (elemType != getTypeName(listVal)) {
+            isAmbiguous = true;
+            firstElementType = elemType;
+            break;
+          }
+        }
       } else {
         // when array is empty insert Null just to warn the user
         firstElementType = "Null";
       }
-      return new TypeDefinition(type, subtype: firstElementType);
+      return new TypeDefinition(type, subtype: firstElementType, isAmbiguous: isAmbiguous);
     }
-    return new TypeDefinition(type);
+    return new TypeDefinition(type, isAmbiguous: isAmbiguous);
   }
 
-  TypeDefinition(this.name, { this.subtype }) {
+  TypeDefinition(this.name, { this.subtype,  this.isAmbiguous }) {
     if (subtype == null) {
       _isPrimitive = isPrimitiveType(this.name);
     } else {
       _isPrimitive = isPrimitiveType('$name<$subtype>');
     }
+    if (isAmbiguous == null) {
+      isAmbiguous = false;
+    }
+  }
+
+  bool operator ==(other) {
+    if (other is TypeDefinition) {
+      TypeDefinition otherTypeDef = other;
+      return this.name == otherTypeDef.name &&
+        this.subtype == otherTypeDef.subtype &&
+        this.isAmbiguous == otherTypeDef.isAmbiguous &&
+        this._isPrimitive == otherTypeDef._isPrimitive;
+    }
+    return false;
   }
 
   bool get isPrimitive => _isPrimitive;
 
   bool get isPrimitiveList => _isPrimitive && name == 'List';
-
-  operator ==(dynamic other) {
-    if (other is TypeDefinition) {
-      return name == other.name && subtype == other.subtype;
-    }
-    return false;
-  }
 
   String _buildParseClass(String expression) {
     final properType = subtype != null ? subtype : name;
@@ -57,6 +103,10 @@ class TypeDefinition {
           return "$fieldKey = json['$key'].cast<$subtype>();";
         }
         return "$fieldKey = json['$key'];";
+    } else if (name == "List" && subtype == "DateTime") {
+      return "$fieldKey = json['$key'].map((v) => DateTime.tryParse(v));";
+    } else if (name == "DateTime") {
+      return "$fieldKey = DateTime.tryParse(json['$key']);";  
     } else if (name == 'List') {
       // list of class
       return "if (json['$key'] != null) {\n\t\t\t$fieldKey = new List<$subtype>();\n\t\t\tjson['$key'].forEach((v) { $fieldKey.add(new $subtype.fromJson(v)); });\n\t\t}";
@@ -115,26 +165,37 @@ class ClassDefinition {
 
   ClassDefinition(this._name, [this._privateFields = false]);
 
+  bool operator ==(other) {
+    if (other is ClassDefinition) {
+      ClassDefinition otherClassDef = other;
+      return this.isSubsetOf(otherClassDef) && otherClassDef.isSubsetOf(this);
+    }
+    return false;
+  }
+
+  bool isSubsetOf(ClassDefinition other) {
+    final List<String> keys = this.fields.keys.toList();
+    final int len = keys.length;
+    for(int i = 0; i < len; i++) {
+      TypeDefinition otherTypeDef = other.fields[keys[i]];
+      if (otherTypeDef != null) {
+        TypeDefinition typeDef = this.fields[keys[i]];
+        if (typeDef != otherTypeDef) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
   hasField(TypeDefinition otherField) {
     return fields.keys.firstWhere((k) => fields[k] == otherField, orElse: () => null) != null;
   }
 
   addField(String name, TypeDefinition typeDef) {
     fields[name] = typeDef;
-  }
-
-  operator ==(dynamic other) {
-    if (other is ClassDefinition) {
-      if (name != other.name) {
-        return false;
-      }
-      return fields.keys.firstWhere(
-        (k) => other.fields.keys.firstWhere(
-          (ok) => fields[k] == other.fields[ok], orElse: () => null
-        ) == null, orElse: () => null
-      ) == null;
-    }
-    return false;
   }
 
   void _addTypeDef(TypeDefinition typeDef, StringBuffer sb) {
@@ -179,7 +240,6 @@ class ClassDefinition {
     fields.keys.forEach((key) {
       final f = fields[key];
       final publicFieldName = fixFieldName(key, typeDef: f, privateField: false);
-      final privateFieldName = fixFieldName(key, typeDef: f, privateField: true);
       _addTypeDef(f, sb);
       sb.write(' $publicFieldName');
       if (i != len) {
