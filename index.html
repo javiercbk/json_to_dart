@@ -9,8 +9,8 @@
     <title>JSON to Dart</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+        integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="styles/github.css">
 
 </head>
@@ -26,11 +26,16 @@
                 <form onsubmit="return false;">
                     <div class="form-group">
                         <label for="json">JSON</label>
-                        <textarea class="form-control" id="json" rows="3"></textarea>
+                        <textarea class="form-control" id="json" rows="3" autofocus></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Class name</label>
+                        <input class="form-control" id="name" />
                     </div>
                     <button type="submit" class="btn btn-primary">Generate Dart</button>
                     <label><input type="checkbox" id="private-fields"> Use private fields</label>
-                    <button id="copy-clipboard" class="mt-2 btn btn-secondary" disabled>Copy Dart code to clipboard</button>
+                    <button id="copy-clipboard" class="mt-2 btn btn-secondary" disabled>Copy Dart code to
+                        clipboard</button>
                 </form>
             </div>
             <div class="col-12 col-md-8">
