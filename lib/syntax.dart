@@ -2,7 +2,7 @@ import './helpers.dart';
 
 const String emptyListWarn = "list is empty";
 const String ambiguousListWarn = "list is ambiguous";
-const String ambiguousTypeWarn = "type is amboguous";
+const String ambiguousTypeWarn = "type is ambiguous";
 
 class Warning {
   final String warning;
@@ -41,21 +41,20 @@ class TypeDefinition {
     final type = getTypeName(obj);
     if (type == 'List') {
       List<dynamic> list = obj;
-      String firstElementType;
+      String elemType;
       if (list.length > 0) {
-        String elemType = getTypeName(list[0]);
+        elemType = getTypeName(list[0]);
         for (dynamic listVal in list) {
           if (elemType != getTypeName(listVal)) {
             isAmbiguous = true;
-            firstElementType = elemType;
             break;
           }
         }
       } else {
         // when array is empty insert Null just to warn the user
-        firstElementType = "Null";
+        elemType = "Null";
       }
-      return new TypeDefinition(type, subtype: firstElementType, isAmbiguous: isAmbiguous);
+      return new TypeDefinition(type, subtype: elemType, isAmbiguous: isAmbiguous);
     }
     return new TypeDefinition(type, isAmbiguous: isAmbiguous);
   }
@@ -156,8 +155,9 @@ class ClassDefinition {
     final dependenciesList = new List<Dependency>();
     final keys = fields.keys;
     keys.forEach((k) {
-      if (!fields[k].isPrimitive) {
-        dependenciesList.add(new Dependency(k, fields[k]));
+      final f = fields[k];
+      if (!f.isPrimitive && (f.name == "List" && f.subtype != "Null")) {
+        dependenciesList.add(new Dependency(k, f));
       }
     });
     return dependenciesList;

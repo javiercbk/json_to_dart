@@ -52,7 +52,7 @@ class ModelGenerator {
         if (typeDef.name == 'Class') {
           typeDef.name = camelCase(key);
         }
-        if (typeDef == 'List' && typeDef.subtype == 'Null') {
+        if (typeDef.name == 'List' && typeDef.subtype == 'Null') {
           warnings.add(newEmptyListWarn('$path/$key'));
         }
         if (typeDef.subtype != null && typeDef.subtype == 'Class') {

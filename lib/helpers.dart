@@ -65,33 +65,45 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
   return new WithWarning(clone, warnings);
 }
 
-WithWarning<Map> mergeList(List<dynamic> list, String path) {
+
+WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
   List<Warning> warnings = new List<Warning>();
   Map obj = new Map();
+  int beginIndex = 0;
   for(var i = 0; i < list.length; i++) {
     Map toMerge = list[i];
     toMerge.forEach((k, v) {
+      final String t = getTypeName(obj[k]);
       if (obj[k] == null) {
         obj[k] = v;
       } else {
         final String otherType = getTypeName(v);
-        final String t = getTypeName(obj[k]);
         if (t != otherType) {
           if (t == 'int' && otherType == 'double') {
             // if double was found instead of int, assign the double
             obj[k] = v;
           } else if (t != 'double' && otherType != 'int') {
             // if types are not equal, then 
-            warnings.add(newAmbiguousType('$path[$i]/$k'));
+            int realIndex = i;
+            if (idx != -1) {
+              realIndex = idx - i;
+            }
+            final String ambiguosTypePath = '$path[$realIndex]/$k';
+            warnings.add(newAmbiguousType(ambiguosTypePath));
           }
         } else if (t == 'List') {
           List l = List.from(obj[k]);
+          final int beginIndex = l.length;
           l.addAll(v);
-          WithWarning<Map> mergedList = mergeList(l, '$path[$i]/$k');
+          WithWarning<Map> mergedList = mergeList(l, '$path[$i]/$k', beginIndex);
           warnings.addAll(mergedList.warnings);
           obj[k] = List.filled(1, mergedList.result);
         } else if (t == 'Class') {
-          WithWarning<Map> mergedObj = mergeObj(obj[k], v, '$path[$i]/$k');
+          int properIndex = i;
+          if (idx != -1) {
+            properIndex = i - idx;
+          }
+          WithWarning<Map> mergedObj = mergeObj(obj[k], v, '$path[$properIndex]/$k',);
           warnings.addAll(mergedObj.warnings);
           obj[k] = mergedObj.result;
         }
