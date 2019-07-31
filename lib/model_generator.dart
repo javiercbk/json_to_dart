@@ -1,4 +1,5 @@
 import 'package:dart_style/dart_style.dart';
+import 'package:json_ast/json_ast.dart' show parse, Settings;
 import './helpers.dart';
 import './syntax.dart';
 
@@ -8,6 +9,7 @@ class DartCode extends WithWarning<String> {
   String get code => this.result;
 }
 
+/// A Hint is a user type correction.
 class Hint {
   final String path;
   final String type;
@@ -33,12 +35,13 @@ class ModelGenerator {
     return this.hints.firstWhere((h) =>  h.path == path, orElse: () => null);
   }
   
-  List<Warning> _generateClassDefinition(String className, Map<dynamic, dynamic> jsonRawData, String path) {
+  List<Warning> _generateClassDefinition(String className, Map<dynamic, dynamic> jsonRawData, String path, Node astNode) {
     List<Warning> warnings = new List<Warning>();
     if (jsonRawData is List) {
       // if first element is an array, start in the first element.
       _generateClassDefinition(className, jsonRawData[0], path);
     } else {
+
       final keys = jsonRawData.keys;
       ClassDefinition classDefinition = new ClassDefinition(className, _privateFields);
       keys.forEach((key) {
@@ -107,7 +110,8 @@ class ModelGenerator {
   /// might be returned
   DartCode generateUnsafeDart(String rawJson) {
     final Map<String, dynamic> jsonRawData = decodeJSON(rawJson);
-    List<Warning> warnings = _generateClassDefinition(_rootClassName, jsonRawData, "");
+    final astNode = parse(rawJson, Settings());
+    List<Warning> warnings = _generateClassDefinition(_rootClassName, jsonRawData, "", astNode);
     return new DartCode(allClasses.map((c) => c.toString()).join('\n'), warnings);
   }
 
