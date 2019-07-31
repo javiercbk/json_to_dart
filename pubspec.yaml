@@ -6,6 +6,7 @@ homepage: https://github.com/javiercbk/json_to_dart
 environment:
   sdk: ">=2.0.0"
 dependencies:
+  json_ast: "^1.0.0"
   convert: "^2.0.1"
   dart_style: "^1.0.10"
 
