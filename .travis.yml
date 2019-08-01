@@ -3,20 +3,26 @@ sudo: false
 
 dart:
   - dev
-  # - stable
 
-dart_task:
-  - test: --platform vm
-
-# Only run one instance of the formatter and the analyzer, rather than running
-# them against each Dart version.
-matrix:
+jobs:
   include:
-  # - dart: stable
-  #   dart_task: dartfmt
-  - dart: dev
-    dart_task: dartanalyzer
+    # First, check that everything analyzes properly and is formatted.
+    - stage: analyze_and_format
+      script:
+        - dartanalyzer --fatal-warnings .
+        - dartfmt -n --set-exit-if-changed .
+    # Set up several jobs in the next stage, using the built in sharding
+    # feature from the `test` package.
+    - stage: unit_test
+      script:
+        - pub run test
 
-# Only building master means that we don't run two builds for each pull request.
-branches:
-  only: [master]
+# Specify the ordering of your stages
+stages:
+  - analyze_and_format
+  - unit_test
+
+cache:
+  directories:
+    - $HOME/.pub-cache
+    - .dart_tool/build
