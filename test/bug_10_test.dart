@@ -38,7 +38,10 @@ void main() {
       expect(ge.abbrev, equals("ISO 8879:1986"));
       expect(ge.glossSee, equals("markup"));
       expect(ge.glossDef, isNot(isNull));
-      expect(ge.glossDef.para, equals("A meta-markup language, used to create markup languages such as DocBook."));
+      expect(
+          ge.glossDef.para,
+          equals(
+              "A meta-markup language, used to create markup languages such as DocBook."));
       final seeAlso = ge.glossDef.glossSeeAlso;
       expect(seeAlso, isNot(isNull));
       expect(seeAlso.length, equals(2));
@@ -51,9 +54,9 @@ void main() {
       glossSeeAlso.add("GML");
       glossSeeAlso.add("XML");
       final glossDef = new GlossDef(
-        para: "A meta-markup language, used to create markup languages such as DocBook.",
-        glossSeeAlso: glossSeeAlso
-      );
+          para:
+              "A meta-markup language, used to create markup languages such as DocBook.",
+          glossSeeAlso: glossSeeAlso);
       final glossEntry = new GlossEntry(
         abbrev: "ISO 8879:1986",
         acronym: "SGML",
@@ -74,9 +77,7 @@ void main() {
         glossDiv: glossDiv,
         title: "example glossary",
       );
-      final bugTen = new BugTen(
-        glossary: glossary
-      );
+      final bugTen = new BugTen(glossary: glossary);
       final codec = new JsonCodec(toEncodable: (dynamic v) => v.toString());
       final encodedJSON = codec.encode(bugTen.toJson());
       expect(encodedJSON.contains('"title":"example glossary"'), equals(true));
@@ -84,11 +85,18 @@ void main() {
       expect(encodedJSON.contains('"GlossList":{"GlossEntry":{'), equals(true));
       expect(encodedJSON.contains('"ID":"SGML",'), equals(true));
       expect(encodedJSON.contains('"SortAs":"SGML",'), equals(true));
-      expect(encodedJSON.contains('"GlossTerm":"Standard Generalized Markup Language",'), equals(true));
+      expect(
+          encodedJSON
+              .contains('"GlossTerm":"Standard Generalized Markup Language",'),
+          equals(true));
       expect(encodedJSON.contains('"Acronym":"SGML",'), equals(true));
       expect(encodedJSON.contains('"Abbrev":"ISO 8879:1986",'), equals(true));
-      expect(encodedJSON.contains('"GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.",'), equals(true));
-      expect(encodedJSON.contains('"GlossSeeAlso":["GML","XML"]'), equals(true));
+      expect(
+          encodedJSON.contains(
+              '"GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.",'),
+          equals(true));
+      expect(
+          encodedJSON.contains('"GlossSeeAlso":["GML","XML"]'), equals(true));
       expect(encodedJSON.contains('"GlossSee":"markup"'), equals(true));
     });
   });

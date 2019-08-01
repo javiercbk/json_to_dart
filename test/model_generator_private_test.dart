@@ -62,7 +62,9 @@ void main() {
       expect(ph[1].shouldCall, equals(false));
     });
 
-    test("Generated class with private fields should correctly parse JSON with missing values", () {
+    test(
+        "Generated class with private fields should correctly parse JSON with missing values",
+        () {
       final jsonPath = normalize(join(currentDirectory, 'test_missing.json'));
       final jsonRawData = new File(jsonPath).readAsStringSync();
       Map sampleMap = json.decode(jsonRawData);
@@ -96,7 +98,8 @@ void main() {
       expect(pi.phones, isNull);
     });
 
-    test("Generated class with private fields should correctly generate JSON", () {
+    test("Generated class with private fields should correctly generate JSON",
+        () {
       final phones = new List<Phones>();
       final phone = new Phones(
         type: "IP",
@@ -127,7 +130,8 @@ void main() {
       expect(encodedJSON.contains('"favouriteInteger":13'), equals(true));
       expect(encodedJSON.contains('"favouriteDouble":3.1416'), equals(true));
       expect(encodedJSON.contains('"url":"http://test.test"'), equals(true));
-      expect(encodedJSON.contains('"html_url":"http://anothertest.test"'), equals(true));
+      expect(encodedJSON.contains('"html_url":"http://anothertest.test"'),
+          equals(true));
       expect(encodedJSON.contains('"tags":["test1"]'), equals(true));
       expect(encodedJSON.contains('"randomIntegers":[4,5]'), equals(true));
       expect(encodedJSON.contains('"randomDoubles":[4.4,5.5]'), equals(true));
@@ -141,7 +145,9 @@ void main() {
       expect(encodedJSON.contains('"shouldCall":true'), equals(true));
     });
 
-    test("Generated class with private fields should correctly generate JSON with missing values", () {
+    test(
+        "Generated class with private fields should correctly generate JSON with missing values",
+        () {
       final personalInfo = new PersonalInfo(
         firstName: "User",
         lastName: null,

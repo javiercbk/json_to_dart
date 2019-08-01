@@ -127,7 +127,8 @@ void main() {
       expect(encodedJSON.contains('"favouriteInteger":13'), equals(true));
       expect(encodedJSON.contains('"favouriteDouble":3.1416'), equals(true));
       expect(encodedJSON.contains('"url":"http://test.test"'), equals(true));
-      expect(encodedJSON.contains('"html_url":"http://anothertest.test"'), equals(true));
+      expect(encodedJSON.contains('"html_url":"http://anothertest.test"'),
+          equals(true));
       expect(encodedJSON.contains('"tags":["test1"]'), equals(true));
       expect(encodedJSON.contains('"randomIntegers":[4,5]'), equals(true));
       expect(encodedJSON.contains('"randomDoubles":[4.4,5.5]'), equals(true));
@@ -141,7 +142,8 @@ void main() {
       expect(encodedJSON.contains('"shouldCall":true'), equals(true));
     });
 
-    test("Generated class should correctly generate JSON with missing values", () {
+    test("Generated class should correctly generate JSON with missing values",
+        () {
       final personalInfo = new PersonalInfo(
         firstName: "User",
         lastName: null,

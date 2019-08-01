@@ -1,4 +1,7 @@
 import 'dart:convert' as Convert;
+import 'dart:math';
+import 'package:json_ast/json_ast.dart'
+    show Node, ObjectNode, ArrayNode, LiteralNode;
 import './syntax.dart';
 
 const Map<String, bool> PRIMITIVE_TYPES = const {
@@ -16,9 +19,11 @@ const Map<String, bool> PRIMITIVE_TYPES = const {
 };
 
 String camelCase(String text) {
-  String capitalize(Match m) => m[0].substring(0, 1).toUpperCase() + m[0].substring(1);
+  String capitalize(Match m) =>
+      m[0].substring(0, 1).toUpperCase() + m[0].substring(1);
   String skip(String s) => "";
-  return text.splitMapJoin(new RegExp(r'[a-zA-Z0-9]+'), onMatch: capitalize, onNonMatch: skip);
+  return text.splitMapJoin(new RegExp(r'[a-zA-Z0-9]+'),
+      onMatch: capitalize, onNonMatch: skip);
 }
 
 String camelCaseFirstLower(String text) {
@@ -37,7 +42,7 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
   final Map clone = Map.from(obj);
   other.forEach((k, v) {
     if (clone[k] == null) {
-        clone[k] = v;
+      clone[k] = v;
     } else {
       final String otherType = getTypeName(v);
       final String t = getTypeName(clone[k]);
@@ -46,7 +51,7 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
           // if double was found instead of int, assign the double
           clone[k] = v;
         } else if (clone[k].runtimeType != 'double' && v.runtimeType != 'int') {
-          // if types are not equal, then 
+          // if types are not equal, then
           warnings.add(newAmbiguousType('$path/$k'));
         }
       } else if (t == 'List') {
@@ -65,12 +70,10 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
   return new WithWarning(clone, warnings);
 }
 
-
 WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
   List<Warning> warnings = new List<Warning>();
   Map obj = new Map();
-  int beginIndex = 0;
-  for(var i = 0; i < list.length; i++) {
+  for (var i = 0; i < list.length; i++) {
     Map toMerge = list[i];
     toMerge.forEach((k, v) {
       final String t = getTypeName(obj[k]);
@@ -83,7 +86,7 @@ WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
             // if double was found instead of int, assign the double
             obj[k] = v;
           } else if (t != 'double' && otherType != 'int') {
-            // if types are not equal, then 
+            // if types are not equal, then
             int realIndex = i;
             if (idx != -1) {
               realIndex = idx - i;
@@ -95,7 +98,8 @@ WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
           List l = List.from(obj[k]);
           final int beginIndex = l.length;
           l.addAll(v);
-          WithWarning<Map> mergedList = mergeList(l, '$path[$i]/$k', beginIndex);
+          WithWarning<Map> mergedList =
+              mergeList(l, '$path[$i]/$k', beginIndex);
           warnings.addAll(mergedList.warnings);
           obj[k] = List.filled(1, mergedList.result);
         } else if (t == 'Class') {
@@ -103,11 +107,15 @@ WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
           if (idx != -1) {
             properIndex = i - idx;
           }
-          WithWarning<Map> mergedObj = mergeObj(obj[k], v, '$path[$properIndex]/$k',);
+          WithWarning<Map> mergedObj = mergeObj(
+            obj[k],
+            v,
+            '$path[$properIndex]/$k',
+          );
           warnings.addAll(mergedObj.warnings);
           obj[k] = mergedObj.result;
         }
-      } 
+      }
     });
   }
   return new WithWarning(obj, warnings);
@@ -121,7 +129,8 @@ isPrimitiveType(String typeName) {
   return isPrimitive;
 }
 
-String fixFieldName(String name, { TypeDefinition typeDef, bool privateField = false }) {
+String fixFieldName(String name,
+    {TypeDefinition typeDef, bool privateField = false}) {
   var properName = name;
   if (name.startsWith('_') || name.startsWith(new RegExp(r'[0-9]'))) {
     final firstCharType = typeDef.name.substring(0, 1).toLowerCase();
@@ -151,4 +160,68 @@ String getTypeName(dynamic obj) {
     // assumed class
     return 'Class';
   }
+}
+
+Node navigateNode(Node astNode, String path) {
+  Node node;
+  if (astNode is ObjectNode) {
+    final ObjectNode objectNode = astNode;
+    final propertyNode = objectNode.children.firstWhere((final prop) {
+      return prop.key.value == path;
+    }, orElse: () {
+      return null;
+    });
+    if (propertyNode != null) {
+      node = propertyNode.value;
+    }
+  }
+  if (astNode is ArrayNode) {
+    final ArrayNode arrayNode = astNode;
+    final index = int.tryParse(path) ?? null;
+    if (index != null && arrayNode.children.length > index) {
+      node = arrayNode.children[index];
+    }
+  }
+  return node;
+}
+
+final _pattern = RegExp(r"([0-9]+)\.{0,1}([0-9]*)e(([-0-9]+))");
+
+bool isASTLiteralDouble(Node astNode) {
+  if (astNode != null && astNode is LiteralNode) {
+    final LiteralNode literalNode = astNode;
+    final containsPoint = literalNode.raw.contains('.');
+    final containsExponent = literalNode.raw.contains('e');
+    if (containsPoint || containsExponent) {
+      var isDouble = containsPoint;
+      if (containsExponent) {
+        final matches = _pattern.firstMatch(literalNode.raw);
+        if (matches != null) {
+          final integer = matches[1];
+          final comma = matches[2];
+          final exponent = matches[3];
+          isDouble = _isDoubleWithExponential(integer, comma, exponent);
+        }
+      }
+      return isDouble;
+    }
+  }
+  return false;
+}
+
+bool _isDoubleWithExponential(String integer, String comma, String exponent) {
+  final integerNumber = int.tryParse(integer) ?? 0;
+  final exponentNumber = int.tryParse(exponent) ?? 0;
+  final commaNumber = int.tryParse(comma) ?? 0;
+  if (exponentNumber != null) {
+    if (exponentNumber == 0) {
+      return commaNumber > 0;
+    }
+    if (exponentNumber > 0) {
+      return exponentNumber < comma.length && commaNumber > 0;
+    }
+    return commaNumber > 0 ||
+        ((integerNumber.toDouble() * pow(10, exponentNumber)).remainder(1) > 0);
+  }
+  return false;
 }
