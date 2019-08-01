@@ -1,0 +1,18 @@
+{
+    "int1": 1,
+    "double2": 1e0,
+    "double3": 1e1,
+    "double4": 1.1e1,
+    "double5": 10e-1,
+    "double6": 1000.000e-1,
+    "double7": 1000.0e-1,
+    "double8": 1000.0e-0,
+    "double9": 10.0000e-1,
+    "double10": 10.000000000000000000000000001,
+    "double11": 10.0,
+    "double12": 10.1e0,
+    "double13": 10.01e1,
+    "double14": 11e-1,
+    "double15": 11.0000e-1,
+    "double16": 0.1
+}

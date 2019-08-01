@@ -14,7 +14,7 @@
             "name": "Unit Tests",
             "type": "dart",
             "request": "launch",
-            "program": "${workspaceFolder}/test/model_generator_test.dart"
+            "program": "${workspaceFolder}/test/model_generator_warnings_test.dart"
         },
     ]
 }

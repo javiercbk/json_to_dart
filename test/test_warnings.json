@@ -1,0 +1,21 @@
+{
+    "ambiguousArray": ["str", 12],
+    "ambiguous": [{
+        "shouldBeDouble": 1,
+        "arr": []
+    }, {
+        "shouldBeDouble": 1.0,
+        "arr": [{
+            "emptyArr": []
+        }, {
+            "amb": 123
+        }]
+    }, {
+        "shouldBeDouble": 1.1,
+        "arr": [{
+            "str": "randomStr",
+            "amb": "123"
+        }]
+    }],
+    "emptyArr": []
+}

@@ -12,7 +12,7 @@ void main() {
         'camelCase': 'CamelCase',
       };
       mappings.keys.forEach((key) {
-        expect(camelCase(key), equals(mappings[key]));  
+        expect(camelCase(key), equals(mappings[key]));
       });
     });
     test("camelCaseFirstLower should correctly transform Strings", () {
@@ -23,15 +23,30 @@ void main() {
         'camelCase': 'camelCase',
       };
       mappings.keys.forEach((key) {
-        expect(camelCaseFirstLower(key), equals(mappings[key]));  
+        expect(camelCaseFirstLower(key), equals(mappings[key]));
       });
     });
 
     test("fixFieldName should avoid offending variable names", () {
-      expect(fixFieldName('48x48', typeDef: new TypeDefinition('String'), privateField: false), equals('s48x48'));
-      expect(fixFieldName('_avoidPrivate', typeDef: new TypeDefinition('String'), privateField: false), equals('sAvoidPrivate'));
-      expect(fixFieldName('48x48', typeDef: new TypeDefinition('String'), privateField: true), equals('_s48x48'));
-      expect(fixFieldName('_avoidPrivate', typeDef: new TypeDefinition('String'), privateField: true), equals('_sAvoidPrivate'));
+      expect(
+          fixFieldName('48x48',
+              typeDef: new TypeDefinition(
+                'String',
+              ),
+              privateField: false),
+          equals('s48x48'));
+      expect(
+          fixFieldName('_avoidPrivate',
+              typeDef: new TypeDefinition('String'), privateField: false),
+          equals('sAvoidPrivate'));
+      expect(
+          fixFieldName('48x48',
+              typeDef: new TypeDefinition('String'), privateField: true),
+          equals('_s48x48'));
+      expect(
+          fixFieldName('_avoidPrivate',
+              typeDef: new TypeDefinition('String'), privateField: true),
+          equals('_sAvoidPrivate'));
     });
   });
 }
