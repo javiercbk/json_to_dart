@@ -1,9 +1,13 @@
 import 'dart:html';
 import 'package:json_to_dart/json_to_dart.dart';
+import 'package:json_ast/json_ast.dart';
 import 'package:json_to_dart/syntax.dart';
+import 'package:json_to_dart/helpers.dart';
 import './json.dart';
 import './ace.dart';
 import './highlight.dart';
+
+typedef ACEEditorAnnotation _annotationMapper(Warning w);
 
 void main() {
   final ButtonElement convertButton = document.querySelector('button[type="submit"]');
@@ -70,15 +74,13 @@ void main() {
         boldElement.style.display = 'block';
       }
       if (dartCode.warnings != null) {
-        final annotations = dartCode.warnings.map<ACEEditorAnnotation>((Warning w) {
-          final annotation = ACEEditorAnnotation();
-          annotation.row = 1;
-          annotation.column = 0;
-          annotation.text = 'Test lalala';
-          annotation.type = 'error';
-          return annotation;
-        }).toList();
-        editor.getSession().setAnnotations(annotations);
+        try {
+          final annotationMapper = buildAnnotationMapper(parse(json, Settings(source: 'input.json')));
+          final annotations = dartCode.warnings.map<ACEEditorAnnotation>(annotationMapper).where((a) => a != null).toList();
+          editor.getSession().setAnnotations(annotations);
+        } catch (e) {
+          print('Error attempting to set annotations: $e');
+        }
       }
       hiddenElement.value = dartCode.code;
       highlightedDartCode.text = dartCode.code;
@@ -90,4 +92,40 @@ void main() {
       copyClipboardButton.attributes.putIfAbsent('disabled', () => 'disabled');
     }
   });
+}
+
+_annotationMapper buildAnnotationMapper(Node root) {
+  return (Warning w) => annotationForWarning(root, w);
+}
+
+final _arrayElementRegExp = new RegExp(r"\[([0-9]+)\]");
+
+ACEEditorAnnotation annotationForWarning(Node root, Warning w) {
+  var node = root;
+  final paths = w.path.split('/');
+  paths.where((p) => p.trim() != '').forEach((p) {
+    if (_arrayElementRegExp.hasMatch(p)) {
+      var splittedPath = p.split('[');
+      // navigate property
+      node = navigateNode(node, splittedPath[0]);
+      splittedPath = splittedPath[1].split(']');
+      // navigate index
+      node = navigateNode(node, splittedPath[0]);
+    } else {
+      node = navigateNode(node, p);
+    }
+  });
+  ACEEditorAnnotation annotation;
+  print('node: ${node}');
+  if (node is LiteralNode) {
+    annotation = ACEEditorAnnotation();
+    print('new annotation at line ${node.loc.start.line}');
+    print('new annotation at column ${node.loc.start.column}');
+    annotation.row = node.loc.start.line - 1;
+    annotation.column = node.loc.start.column - 1;
+    annotation.text = w.warning;
+    annotation.type = 'error';
+    return annotation;
+  }
+  return annotation;
 }

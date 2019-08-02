@@ -8,5 +8,6 @@ environment:
 dependencies:
   json_to_dart: "^1.0.0"
   json_ast: "^1.0.5"
+  js: "^0.6.0"
   convert: "^2.0.1"
   dart_style: "^1.0.10"
