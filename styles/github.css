@@ -4,6 +4,16 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 */
 
+#jsonEditor {
+  margin-bottom: 10px;
+  min-height: 40vh;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
 #invalid-dart {
   color: red;
 }

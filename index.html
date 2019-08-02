@@ -9,8 +9,7 @@
     <title>JSON to Dart</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="styles/github.css">
 
 </head>
@@ -21,13 +20,14 @@
             <h2>JSON to Dart</h2>
             <p class="lead">Paste your JSON in the textarea below, click convert and get your Dart classes for free.</p>
         </div>
-        <div class="row">
+        <div class="row code-row">
             <div class="col-12 col-md-4">
                 <form onsubmit="return false;">
                     <div class="form-group">
-                        <label for="json">JSON</label>
-                        <textarea class="form-control" id="json" rows="3"></textarea>
+                        <label for="jsonEditor">JSON</label>
+                        <div id="jsonEditor"></div>
                     </div>
+                    <input class="form-control mb-2" id="dartClassName" placeholder="Your dart class name goes here">
                     <button type="submit" class="btn btn-primary">Generate Dart</button>
                     <label><input type="checkbox" id="private-fields"> Use private fields</label>
                     <button id="copy-clipboard" class="mt-2 btn btn-secondary" disabled>Copy Dart code to clipboard</button>
@@ -55,6 +55,9 @@
         </footer>
     </div>
     <script src="js/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/mode-json.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/theme-github.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/page.js"></script>
 </body>
 
