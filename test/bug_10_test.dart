@@ -3,6 +3,7 @@ import 'dart:convert';
 import "package:path/path.dart" show dirname, join, normalize;
 import 'package:test/test.dart';
 import './generated/bug_ten.dart';
+import '../lib/json_to_dart.dart' show ModelGenerator;
 
 String _scriptPath() {
   var script = Platform.script.toString();
@@ -18,6 +19,16 @@ String _scriptPath() {
 void main() {
   group("model-generator", () {
     final currentDirectory = dirname(_scriptPath());
+
+    test("Should generate the classes to parse the JSON", () {
+      final jsonPath = normalize(join(currentDirectory, 'bug_10.json'));
+      final jsonRawData = new File(jsonPath).readAsStringSync();
+      final generator = ModelGenerator('BugTen');
+      final dartCode = generator.generateDartClasses(jsonRawData);
+      expect(dartCode.warnings.length, equals(0));
+      expect(dartCode.code.contains('class GlossDiv'), equals(true));
+    });
+
     test("Generated class should correctly parse JSON for bug 10", () {
       final jsonPath = normalize(join(currentDirectory, 'bug_10.json'));
       final jsonRawData = new File(jsonPath).readAsStringSync();

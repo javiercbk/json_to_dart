@@ -163,7 +163,7 @@ class ClassDefinition {
     final keys = fields.keys;
     keys.forEach((k) {
       final f = fields[k];
-      if (!f.isPrimitive && (f.name == "List" && f.subtype != "Null")) {
+      if (!f.isPrimitive) {
         dependenciesList.add(new Dependency(k, f));
       }
     });
