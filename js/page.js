@@ -22639,7 +22639,7 @@ if(u.b)return"class "+t+" {\n"+u.gnw()+"\n\n"+u.gun()+"\n\n"+u.guy()+"\n\n"+u.gn
 else return"class "+t+" {\n"+u.gnw()+"\n\n"+u.gum()+"\n\n"+u.gnG()+"\n\n"+u.gnF()+"\n}\n"}}
 M.j8.prototype={
 $1:function(a){var u=this.a.c.D(0,a)
-if(!u.d&&u.a==="List"&&u.b!=="Null")this.b.push(new M.cU(a,u))},
+if(!u.d)this.b.push(new M.cU(a,u))},
 $S:3}
 M.j4.prototype={
 $1:function(a){var u=this.a,t=u.c.D(0,a),s=Q.c5(a,u.b,t),r=new P.Y("")
