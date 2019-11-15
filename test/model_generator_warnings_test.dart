@@ -1,6 +1,6 @@
 import 'dart:io';
-import '../lib/model_generator.dart';
-import "package:path/path.dart" show dirname, join, normalize;
+import 'package:json_to_dart/model_generator.dart';
+import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:test/test.dart';
 
 String _scriptPath() {

@@ -2,7 +2,7 @@ import 'dart:convert' as Convert;
 import 'dart:math';
 import 'package:json_ast/json_ast.dart'
     show Node, ObjectNode, ArrayNode, LiteralNode;
-import './syntax.dart';
+import 'package:json_to_dart/syntax.dart';
 
 const Map<String, bool> PRIMITIVE_TYPES = const {
   'int': true,

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-import "package:path/path.dart" show dirname, join, normalize;
+import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:test/test.dart';
 import './generated/sample_private.dart';
 

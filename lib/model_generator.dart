@@ -1,7 +1,7 @@
 import 'package:dart_style/dart_style.dart';
 import 'package:json_ast/json_ast.dart' show parse, Settings, Node;
-import './helpers.dart';
-import './syntax.dart';
+import 'package:json_to_dart/helpers.dart';
+import 'package:json_to_dart/syntax.dart';
 
 class DartCode extends WithWarning<String> {
   DartCode(String result, List<Warning> warnings) : super(result, warnings);
@@ -35,14 +35,15 @@ class ModelGenerator {
     return this.hints.firstWhere((h) => h.path == path, orElse: () => null);
   }
 
-  List<Warning> _generateClassDefinition(String className,
-      Map<dynamic, dynamic> jsonRawData, String path, Node astNode) {
+  List<Warning> _generateClassDefinition(
+      String className, dynamic jsonRawDynamicData, String path, Node astNode) {
     List<Warning> warnings = new List<Warning>();
-    if (jsonRawData is List) {
+    if (jsonRawDynamicData is List) {
       // if first element is an array, start in the first element.
       final node = navigateNode(astNode, '0');
-      _generateClassDefinition(className, jsonRawData[0], path, node);
+      _generateClassDefinition(className, jsonRawDynamicData[0], path, node);
     } else {
+      final Map<dynamic, dynamic> jsonRawData = jsonRawDynamicData;
       final keys = jsonRawData.keys;
       ClassDefinition classDefinition =
           new ClassDefinition(className, _privateFields);
@@ -113,7 +114,7 @@ class ModelGenerator {
   /// formatted JSON string. The dart code is not validated so invalid dart code
   /// might be returned
   DartCode generateUnsafeDart(String rawJson) {
-    final Map<String, dynamic> jsonRawData = decodeJSON(rawJson);
+    final jsonRawData = decodeJSON(rawJson);
     final astNode = parse(rawJson, Settings());
     List<Warning> warnings =
         _generateClassDefinition(_rootClassName, jsonRawData, "", astNode);

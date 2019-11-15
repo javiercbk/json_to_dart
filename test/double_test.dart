@@ -3,8 +3,8 @@ import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:json_ast/json_ast.dart' show LiteralNode;
 import 'package:test/test.dart';
 
-import '../lib/model_generator.dart';
-import '../lib/helpers.dart' show isASTLiteralDouble;
+import 'package:json_to_dart/model_generator.dart';
+import 'package:json_to_dart/helpers.dart' show isASTLiteralDouble;
 
 String _scriptPath() {
   var script = Platform.script.toString();

@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
-import "package:path/path.dart" show dirname, join, normalize;
+
+import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:test/test.dart';
+import 'package:json_to_dart/json_to_dart.dart' show ModelGenerator;
 import './generated/bug_ten.dart';
-import '../lib/json_to_dart.dart' show ModelGenerator;
 
 String _scriptPath() {
   var script = Platform.script.toString();

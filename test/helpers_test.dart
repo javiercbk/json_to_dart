@@ -1,6 +1,6 @@
-import "package:test/test.dart";
-import '../lib/helpers.dart';
-import '../lib/syntax.dart';
+import 'package:test/test.dart';
+import 'package:json_to_dart/helpers.dart';
+import 'package:json_to_dart/syntax.dart';
 
 void main() {
   group("helpers", () {

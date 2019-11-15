@@ -1,5 +1,3 @@
 {
-    "dart.sdkPath": "/usr/local/opt/dart/libexec",
-    "dart.debugSdkLibraries": false,
-    "dart.debugExternalLibraries": false,
+  "editor.formatOnSave": true
 }
