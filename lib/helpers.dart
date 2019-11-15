@@ -18,6 +18,37 @@ const Map<String, bool> PRIMITIVE_TYPES = const {
   'Null': true,
 };
 
+enum ListType { Object, String, Double, Int, Null }
+
+class MergeableListType {
+  final ListType listType;
+  final bool isAmbigous;
+
+  MergeableListType(this.listType, this.isAmbigous);
+}
+
+MergeableListType mergeableListType(List<dynamic> list) {
+  ListType t = ListType.Null;
+  bool isAmbigous = false;
+  list.forEach((e) {
+    ListType inferredType;
+    if (e.runtimeType == 'int') {
+      inferredType = ListType.Int;
+    } else if (e.runtimeType == 'double') {
+      inferredType = ListType.Double;
+    } else if (e.runtimeType == 'string') {
+      inferredType = ListType.String;
+    } else if (e is Map) {
+      inferredType = ListType.Object;
+    }
+    if (t != ListType.Null && t != inferredType) {
+      isAmbigous = true;
+    }
+    t = inferredType;
+  });
+  return MergeableListType(t, isAmbigous);
+}
+
 String camelCase(String text) {
   String capitalize(Match m) =>
       m[0].substring(0, 1).toUpperCase() + m[0].substring(1);
@@ -57,9 +88,19 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
       } else if (t == 'List') {
         List l = List.from(clone[k]);
         l.addAll(other[k]);
-        WithWarning<Map> mergedList = mergeList(l, '$path/$k');
-        warnings.addAll(mergedList.warnings);
-        clone[k] = List.filled(1, mergedList.result);
+        final mergeableType = mergeableListType(l);
+        if (ListType.Object == mergeableType.listType) {
+          WithWarning<Map> mergedList = mergeObjectList(l, '$path');
+          warnings.addAll(mergedList.warnings);
+          clone[k] = List.filled(1, mergedList.result);
+        } else {
+          if (l.length > 0) {
+            clone[k] = List.filled(1, l[0]);
+          }
+          if (mergeableType.isAmbigous) {
+            warnings.add(newAmbiguousType('$path/$k'));
+          }
+        }
       } else if (t == 'Class') {
         WithWarning<Map> mergedObj = mergeObj(clone[k], other[k], '$path/$k');
         warnings.addAll(mergedObj.warnings);
@@ -70,53 +111,67 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
   return new WithWarning(clone, warnings);
 }
 
-WithWarning<Map> mergeList(List<dynamic> list, String path, [int idx = -1]) {
+WithWarning<Map> mergeObjectList(List<dynamic> list, String path,
+    [int idx = -1]) {
   List<Warning> warnings = new List<Warning>();
   Map obj = new Map();
   for (var i = 0; i < list.length; i++) {
-    Map toMerge = list[i];
-    toMerge.forEach((k, v) {
-      final String t = getTypeName(obj[k]);
-      if (obj[k] == null) {
-        obj[k] = v;
-      } else {
-        final String otherType = getTypeName(v);
-        if (t != otherType) {
-          if (t == 'int' && otherType == 'double') {
-            // if double was found instead of int, assign the double
-            obj[k] = v;
-          } else if (t != 'double' && otherType != 'int') {
-            // if types are not equal, then
-            int realIndex = i;
-            if (idx != -1) {
-              realIndex = idx - i;
+    final toMerge = list[i];
+    if (toMerge is Map) {
+      toMerge.forEach((k, v) {
+        final String t = getTypeName(obj[k]);
+        if (obj[k] == null) {
+          obj[k] = v;
+        } else {
+          final String otherType = getTypeName(v);
+          if (t != otherType) {
+            if (t == 'int' && otherType == 'double') {
+              // if double was found instead of int, assign the double
+              obj[k] = v;
+            } else if (t != 'double' && otherType != 'int') {
+              // if types are not equal, then
+              int realIndex = i;
+              if (idx != -1) {
+                realIndex = idx - i;
+              }
+              final String ambiguosTypePath = '$path[$realIndex]/$k';
+              warnings.add(newAmbiguousType(ambiguosTypePath));
             }
-            final String ambiguosTypePath = '$path[$realIndex]/$k';
-            warnings.add(newAmbiguousType(ambiguosTypePath));
+          } else if (t == 'List') {
+            List l = List.from(obj[k]);
+            final int beginIndex = l.length;
+            l.addAll(v);
+            // bug is here
+            final mergeableType = mergeableListType(l);
+            if (ListType.Object == mergeableType.listType) {
+              WithWarning<Map> mergedList =
+                  mergeObjectList(l, '$path[$i]/$k', beginIndex);
+              warnings.addAll(mergedList.warnings);
+              obj[k] = List.filled(1, mergedList.result);
+            } else {
+              if (l.length > 0) {
+                obj[k] = List.filled(1, l[0]);
+              }
+              if (mergeableType.isAmbigous) {
+                warnings.add(newAmbiguousType('$path[$i]/$k'));
+              }
+            }
+          } else if (t == 'Class') {
+            int properIndex = i;
+            if (idx != -1) {
+              properIndex = i - idx;
+            }
+            WithWarning<Map> mergedObj = mergeObj(
+              obj[k],
+              v,
+              '$path[$properIndex]/$k',
+            );
+            warnings.addAll(mergedObj.warnings);
+            obj[k] = mergedObj.result;
           }
-        } else if (t == 'List') {
-          List l = List.from(obj[k]);
-          final int beginIndex = l.length;
-          l.addAll(v);
-          WithWarning<Map> mergedList =
-              mergeList(l, '$path[$i]/$k', beginIndex);
-          warnings.addAll(mergedList.warnings);
-          obj[k] = List.filled(1, mergedList.result);
-        } else if (t == 'Class') {
-          int properIndex = i;
-          if (idx != -1) {
-            properIndex = i - idx;
-          }
-          WithWarning<Map> mergedObj = mergeObj(
-            obj[k],
-            v,
-            '$path[$properIndex]/$k',
-          );
-          warnings.addAll(mergedObj.warnings);
-          obj[k] = mergedObj.result;
         }
-      }
-    });
+      });
+    }
   }
   return new WithWarning(obj, warnings);
 }

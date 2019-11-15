@@ -1,0 +1,145 @@
+{
+  "SessionExpire": 240,
+  "StayLoggedInTime": 10000,
+  "StayLoggedInDeviceType": 3,
+  "CanShareAsNews": true,
+  "NewsFeedSummaryLength": 300,
+  "ApplicationLanguageAccess": [1],
+  "GAAccount": "UA-75836431-2",
+  "FileUploadLimit": 50,
+  "FileTypeExtensions": {
+    ".XPM": 12,
+    ".JP2": 12,
+    ".HTML": 8
+  },
+  "CurrentVersion": {
+    "Id": 133,
+    "VersionMajor": 129,
+    "VersionMinor": 5,
+    "UpgradeOn": "2019-01-24T16:13:00+01:00",
+    "UpgradeEndTime": "2019-01-24T16:23:00+01:00",
+    "UpgradeVersionType": 1,
+    "InternalDescription": null,
+    "CustomerInformation": "Denna uppgradering innehåller buggfixar.",
+    "VersionNumberText": "0.0.129.5",
+    "UpgradeStatusType": 2,
+    "SecondsUntilUpgradeStart": -24180091,
+    "CreatedByUserId": 7904,
+    "CreatedOn": "2019-01-24T15:14:18+01:00",
+    "ChangedByUserId": 7904,
+    "ChangedOn": "2019-01-24T15:14:18+01:00",
+    "CreatedByUserName": "Mattias Andersson",
+    "ChangedByUserName": "Mattias Andersson"
+  },
+  "NumberOfDaysTillNextUpgrade": 2147483647,
+  "UserIPAddress": "78.159.99.208",
+  "Senders": ["Chain SMS Sender"],
+  "CurrentCulture": "en-US",
+  "UserApplicationLanguageType": 2,
+  "ShowStayLoggedIn": true,
+  "IsRequestAccessAvailable": true,
+  "SupportPhoneNumber": "+380666901413",
+  "SupportEmailAddress": "mattias@chainformation.com",
+  "CustomerId": 25,
+  "CustomerName": "Chainformation",
+  "MobileAppName": "Development App",
+  "DefaultApplicationLanguageType": 2,
+  "AdConfigs": null,
+  "CustomButtons": [],
+  "CustomerSettings": {
+    "Id": 1,
+    "BrandingColor": "27ae60",
+    "LogoReference": {
+      "Id": 2377,
+      "ObjectId": 1,
+      "MediaBankFileId": 4552,
+      "ObjectType": 58,
+      "IsDirectUpload": false,
+      "PhysicalFileName": "98fe2958-5a34-4e75-be45-0f470b65ef41",
+      "Extension": ".jpg",
+      "Name": "images (1)",
+      "FileType": 1,
+      "Width": 300,
+      "Height": 168,
+      "CreatedOn": "2019-01-14T15:20:10+01:00",
+      "CreatedByUserId": 7904,
+      "CreatedByUserName": "Mattias Andersson",
+      "CreatedByMediaBankPhysicalFileName": "d6f1b7d4-3437-4544-8eb1-4876b3af0502",
+      "ContentType": "image/jpeg",
+      "ReferenceType": 2
+    },
+    "LandscapeReference": {
+      "Id": 2378,
+      "ObjectId": 1,
+      "MediaBankFileId": 4553,
+      "ObjectType": 58,
+      "IsDirectUpload": false,
+      "PhysicalFileName": "077114c6-1ef1-49ae-90e2-c01c1b5954fb",
+      "Extension": ".jpg",
+      "Name": "Bos_grunnien",
+      "FileType": 1,
+      "Width": 3264,
+      "Height": 2448,
+      "CreatedOn": "2019-01-14T15:20:18+01:00",
+      "CreatedByUserId": 7904,
+      "CreatedByUserName": "Mattias Andersson",
+      "CreatedByMediaBankPhysicalFileName": "d6f1b7d4-3437-4544-8eb1-4876b3af0502",
+      "ContentType": "image/jpeg",
+      "ReferenceType": 3
+    },
+    "PortraitReference": {
+      "Id": 2379,
+      "ObjectId": 1,
+      "MediaBankFileId": 4554,
+      "ObjectType": 58,
+      "IsDirectUpload": false,
+      "PhysicalFileName": "9bec8dd7-602c-4aa8-b0f6-00277e077604",
+      "Extension": ".jpg",
+      "Name": "165",
+      "FileType": 1,
+      "Width": 900,
+      "Height": 600,
+      "CreatedOn": "2019-01-14T15:20:30+01:00",
+      "CreatedByUserId": 7904,
+      "CreatedByUserName": "Mattias Andersson",
+      "CreatedByMediaBankPhysicalFileName": "d6f1b7d4-3437-4544-8eb1-4876b3af0502",
+      "ContentType": "image/jpeg",
+      "ReferenceType": 4
+    }
+  },
+  "UpcomingVersion": null,
+  "ChecklistPresenceEnabled": false,
+  "StorageDomain": "https://ccm2westeurope.blob.core.windows.net",
+  "ApplicationSettingAccessTypes": [
+    {
+      "ApplicationSettingType": 103,
+      "AccessRightTypes": [40]
+    },
+    {
+      "ApplicationSettingType": 104,
+      "AccessRightTypes": [40]
+    },
+    {
+      "ApplicationSettingType": 105,
+      "AccessRightTypes": [10, 20, 30, 40]
+    }
+  ],
+  "ContentLanguages": [
+    {
+      "Id": 1,
+      "IsDefaultLanguage": false
+    },
+    {
+      "Id": 2,
+      "IsDefaultLanguage": true
+    },
+    {
+      "Id": 4,
+      "IsDefaultLanguage": false
+    },
+    {
+      "Id": 10,
+      "IsDefaultLanguage": false
+    }
+  ]
+}

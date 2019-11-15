@@ -85,7 +85,7 @@ class ModelGenerator {
             // into a single one
             dynamic toAnalyze;
             if (!dependency.typeDef.isAmbiguous) {
-              WithWarning<Map> mergeWithWarning = mergeList(
+              WithWarning<Map> mergeWithWarning = mergeObjectList(
                   jsonRawData[dependency.name], '$path/${dependency.name}');
               toAnalyze = mergeWithWarning.result;
               warnings.addAll(mergeWithWarning.warnings);
