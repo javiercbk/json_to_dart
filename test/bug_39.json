@@ -1,0 +1,27 @@
+{
+  "code": 0,
+  "data": {
+    "statistic1": {
+      "count": [[2]],
+      "duration": [[7200]],
+      "x": ["经销商门店1"],
+      "y": ["DREAM-6"]
+    },
+    "statistic2": {
+      "count": [6],
+      "duration": [21600],
+      "x": ["经销商门店1"]
+    },
+    "statistic3": {
+      "count": [3],
+      "duration": [10800],
+      "x": ["DREAM-6"]
+    },
+    "statistic4": {
+      "count": [2],
+      "duration": [7200],
+      "x": ["88888887"]
+    }
+  },
+  "message": ""
+}

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:dart_style/dart_style.dart';
 import 'package:json_ast/json_ast.dart' show parse, Settings, Node;
 import 'package:json_to_dart/helpers.dart';
@@ -21,6 +23,7 @@ class ModelGenerator {
   final String _rootClassName;
   final bool _privateFields;
   List<ClassDefinition> allClasses = new List<ClassDefinition>();
+  final Map<String, String> sameClassMapping = new HashMap<String, String>();
   List<Hint> hints;
 
   ModelGenerator(this._rootClassName, [this._privateFields = false, hints]) {
@@ -70,9 +73,13 @@ class ModelGenerator {
         }
         classDefinition.addField(key, typeDef);
       });
-      if (allClasses.firstWhere((cd) => cd == classDefinition,
-              orElse: () => null) ==
-          null) {
+      final similarClass = allClasses.firstWhere((cd) => cd == classDefinition,
+          orElse: () => null);
+      if (similarClass != null) {
+        final similarClassName = similarClass.name;
+        final currentClassName = classDefinition.name;
+        sameClassMapping[currentClassName] = similarClassName;
+      } else {
         allClasses.add(classDefinition);
       }
       final dependencies = classDefinition.dependencies;
@@ -118,6 +125,16 @@ class ModelGenerator {
     final astNode = parse(rawJson, Settings());
     List<Warning> warnings =
         _generateClassDefinition(_rootClassName, jsonRawData, "", astNode);
+    // after generating all classes, replace the omited similar classes.
+    allClasses.forEach((c) {
+      final fieldsKeys = c.fields.keys;
+      fieldsKeys.forEach((f) {
+        final typeForField = c.fields[f];
+        if (sameClassMapping.containsKey(typeForField.name)) {
+          c.fields[f].name = sameClassMapping[typeForField.name];
+        }
+      });
+    });
     return new DartCode(
         allClasses.map((c) => c.toString()).join('\n'), warnings);
   }
