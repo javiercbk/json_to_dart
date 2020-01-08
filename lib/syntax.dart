@@ -214,17 +214,21 @@ class ClassDefinition {
     }
   }
 
-  String get _fieldList {
+  String _generateFieldList({int indentLevel = 1, String delimiter = ";"}) {
     return fields.keys.map((key) {
       final f = fields[key];
       final fieldName =
           fixFieldName(key, typeDef: f, privateField: privateFields);
       final sb = new StringBuffer();
-      sb.write('\t');
+      sb.write('\t' * indentLevel);
       _addTypeDef(f, sb);
-      sb.write(' $fieldName;');
+      sb.write(' $fieldName$delimiter');
       return sb.toString();
     }).join('\n');
+  }
+
+  String get _fieldList {
+    return _generateFieldList();
   }
 
   String get _gettersSetters {
@@ -293,6 +297,23 @@ class ClassDefinition {
     return sb.toString();
   }
 
+  String get _copyConstructor {
+    final sb = new StringBuffer();
+    sb.write('\t$name copyWithUpdate({');
+    sb.write(_generateFieldList(indentLevel: 2, delimiter: ","));
+    sb.write('\t}) {');
+    sb.write('\t\treturn $name(');
+    fields.keys.forEach((key) {
+      final f = fields[key];
+      final fieldName =
+          fixFieldName(key, typeDef: f, privateField: privateFields);
+      sb.write('$fieldName: $fieldName ?? this.$fieldName,');
+    });
+    sb.write(');'); // return $name(...
+    sb.write('}');
+    return sb.toString();
+  }
+
   String get _jsonParseFunc {
     final sb = new StringBuffer();
     sb.write('\t$name');
@@ -320,7 +341,7 @@ class ClassDefinition {
     if (privateFields) {
       return 'class $name {\n$_fieldList\n\n$_defaultPrivateConstructor\n\n$_gettersSetters\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
     } else {
-      return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
+      return 'class $name {\n$_fieldList\n\n$_defaultConstructor\n\n$_copyConstructor\n\n$_jsonParseFunc\n\n$_jsonGenFunc\n}\n';
     }
   }
 }
