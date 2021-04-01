@@ -1,13 +1,13 @@
 class Warning {
+  Warning(this.warning, this.path);
   final String warning;
   final String path;
 
-  Warning(this.warning, this.path);
 }
 
 class WithWarning<T> {
+  WithWarning(this.result, this.warnings);
   final T result;
   final List<Warning> warnings;
 
-  WithWarning(this.result, this.warnings);
 }

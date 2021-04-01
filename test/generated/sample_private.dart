@@ -1,13 +1,4 @@
 class Sample {
-  String _username;
-  int _favouriteInteger;
-  double _favouriteDouble;
-  String _url;
-  String _htmlUrl;
-  List<String> _tags;
-  List<int> _randomIntegers;
-  List<double> _randomDoubles;
-  PersonalInfo _personalInfo;
 
   Sample(
       {String username,
@@ -29,7 +20,28 @@ class Sample {
     this._randomDoubles = randomDoubles;
     this._personalInfo = personalInfo;
   }
-
+Sample.fromJson(Map<String, dynamic> json) {
+    _username = json['username'];
+    _favouriteInteger = json['favouriteInteger'];
+    _favouriteDouble = json['favouriteDouble'];
+    _url = json['url'];
+    _htmlUrl = json['html_url'];
+    _tags = json['tags'].cast<String>();
+    _randomIntegers = json['randomIntegers'].cast<int>();
+    _randomDoubles = json['randomDoubles'].cast<double>();
+    _personalInfo = json['personalInfo'] != null
+        ? new PersonalInfo.fromJson(json['personalInfo'])
+        : null;
+  }
+  String _username;
+  int _favouriteInteger;
+  double _favouriteDouble;
+  String _url;
+  String _htmlUrl;
+  List<String> _tags;
+  List<int> _randomIntegers;
+  List<double> _randomDoubles;
+  PersonalInfo _personalInfo;
   String get username => _username;
   set username(String username) => _username = username;
   int get favouriteInteger => _favouriteInteger;
@@ -53,22 +65,10 @@ class Sample {
   PersonalInfo get personalInfo => _personalInfo;
   set personalInfo(PersonalInfo personalInfo) => _personalInfo = personalInfo;
 
-  Sample.fromJson(Map<String, dynamic> json) {
-    _username = json['username'];
-    _favouriteInteger = json['favouriteInteger'];
-    _favouriteDouble = json['favouriteDouble'];
-    _url = json['url'];
-    _htmlUrl = json['html_url'];
-    _tags = json['tags'].cast<String>();
-    _randomIntegers = json['randomIntegers'].cast<int>();
-    _randomDoubles = json['randomDoubles'].cast<double>();
-    _personalInfo = json['personalInfo'] != null
-        ? new PersonalInfo.fromJson(json['personalInfo'])
-        : null;
-  }
+  
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['username'] = this._username;
     data['favouriteInteger'] = this._favouriteInteger;
     data['favouriteDouble'] = this._favouriteDouble;
@@ -85,10 +85,6 @@ class Sample {
 }
 
 class PersonalInfo {
-  String _firstName;
-  String _lastName;
-  String _location;
-  List<Phones> _phones;
 
   PersonalInfo(
       {String firstName,
@@ -100,7 +96,22 @@ class PersonalInfo {
     this._location = location;
     this._phones = phones;
   }
+PersonalInfo.fromJson(Map<String, dynamic> json) {
+    _firstName = json['firstName'];
+    _lastName = json['lastName'];
+    _location = json['location'];
+    if (json['phones'] != null) {
+      _phones = <Phones>[];
+      json['phones'].forEach((Map<String, dynamic> v) {
+        _phones.add(new Phones.fromJson(v));
+      });
+    }
+  }
 
+  String _firstName;
+  String _lastName;
+  String _location;
+  List<Phones> _phones;
   String get firstName => _firstName;
   set firstName(String firstName) => _firstName = firstName;
   String get lastName => _lastName;
@@ -110,40 +121,34 @@ class PersonalInfo {
   List<Phones> get phones => _phones;
   set phones(List<Phones> phones) => _phones = phones;
 
-  PersonalInfo.fromJson(Map<String, dynamic> json) {
-    _firstName = json['firstName'];
-    _lastName = json['lastName'];
-    _location = json['location'];
-    if (json['phones'] != null) {
-      _phones = new List<Phones>();
-      json['phones'].forEach((v) {
-        _phones.add(new Phones.fromJson(v));
-      });
-    }
-  }
-
+  
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+     Map<String, dynamic> data = new Map<String, dynamic>();
     data['firstName'] = this._firstName;
     data['lastName'] = this._lastName;
     data['location'] = this._location;
     if (this._phones != null) {
-      data['phones'] = this._phones.map((v) => v.toJson()).toList();
+      data['phones'] = this._phones.map((Phones v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Phones {
-  String _type;
-  String _number;
-  bool _shouldCall;
 
   Phones({String type, String number, bool shouldCall}) {
     this._type = type;
     this._number = number;
     this._shouldCall = shouldCall;
   }
+  Phones.fromJson(Map<String, dynamic> json) {
+    _type = json['type'];
+    _number = json['number'];
+    _shouldCall = json['shouldCall'];
+  }
+  String _type;
+  String _number;
+  bool _shouldCall;
 
   String get type => _type;
   set type(String type) => _type = type;
@@ -152,14 +157,9 @@ class Phones {
   bool get shouldCall => _shouldCall;
   set shouldCall(bool shouldCall) => _shouldCall = shouldCall;
 
-  Phones.fromJson(Map<String, dynamic> json) {
-    _type = json['type'];
-    _number = json['number'];
-    _shouldCall = json['shouldCall'];
-  }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['type'] = this._type;
     data['number'] = this._number;
     data['shouldCall'] = this._shouldCall;
