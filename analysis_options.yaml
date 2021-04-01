@@ -1,0 +1,35 @@
+analyzer:
+  errors:
+    unused_local_variable: ignore
+    invalid_assignment: warning
+    missing_return: error
+    dead_code: warning
+
+linter:
+  rules:
+    avoid_type_to_string: true
+    avoid_slow_async_io: true
+    camel_case_types: true
+    empty_constructor_bodies: true
+    prefer_const_constructors: true
+    sort_constructors_first: true
+    prefer_single_quotes: true
+    lines_longer_than_80_chars: true
+    avoid_empty_else: true
+    cancel_subscriptions: true
+    close_sinks: true
+    prefer_conditional_assignment: true
+    cast_nullable_to_non_nullable: true
+    null_check_on_nullable_type_parameter: true
+    always_specify_types: true
+    prefer_null_aware_operators: true
+    avoid_returning_null_for_future: true
+    unnecessary_nullable_for_final_variable_declarations: true
+    always_declare_return_types: true
+    avoid_returning_null: true
+    avoid_returning_null_for_void: true
+    avoid_returning_this: true
+    avoid_void_async: true
+    prefer_expression_function_bodies: true
+    unnecessary_await_in_return: true
+    unnecessary_final: true

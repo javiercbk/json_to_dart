@@ -13,47 +13,45 @@ class DartCode extends WithWarning<String> {
 
 /// A Hint is a user type correction.
 class Hint {
+  Hint(this.path, this.type);
   final String path;
   final String type;
-
-  Hint(this.path, this.type);
 }
 
 class ModelGenerator {
-  final String _rootClassName;
-  final bool _privateFields;
-  List<ClassDefinition> allClasses = new List<ClassDefinition>();
-  final Map<String, String> sameClassMapping = new HashMap<String, String>();
-  List<Hint> hints;
-
-  ModelGenerator(this._rootClassName, [this._privateFields = false, hints]) {
+  ModelGenerator(this._rootClassName,
+      [this._privateFields = false, this.hints]) {
     if (hints != null) {
       this.hints = hints;
     } else {
-      this.hints = new List<Hint>();
+      this.hints = <Hint>[];
     }
   }
+  final String _rootClassName;
+  final bool _privateFields;
+  List<ClassDefinition> allClasses = <ClassDefinition>[];
+  final Map<String, String> sameClassMapping = new HashMap<String, String>();
+  List<Hint> hints;
 
-  Hint _hintForPath(String path) {
-    return this.hints.firstWhere((h) => h.path == path, orElse: () => null);
-  }
+  Hint _hintForPath(String path) =>
+      this.hints.firstWhere((Hint h) => h.path == path, orElse: () => null);
 
   List<Warning> _generateClassDefinition(
       String className, dynamic jsonRawDynamicData, String path, Node astNode) {
-    List<Warning> warnings = new List<Warning>();
+    List<Warning> warnings = <Warning>[];
     if (jsonRawDynamicData is List) {
       // if first element is an array, start in the first element.
-      final node = navigateNode(astNode, '0');
+      Node node = navigateNode(astNode, '0');
       _generateClassDefinition(className, jsonRawDynamicData[0], path, node);
     } else {
-      final Map<dynamic, dynamic> jsonRawData = jsonRawDynamicData;
-      final keys = jsonRawData.keys;
+      Map<dynamic, dynamic> jsonRawData = jsonRawDynamicData;
+      Iterable<dynamic> keys = jsonRawData.keys;
       ClassDefinition classDefinition =
           new ClassDefinition(className, _privateFields);
-      keys.forEach((key) {
+      keys.forEach((dynamic key) {
         TypeDefinition typeDef;
-        final hint = _hintForPath('$path/$key');
-        final node = navigateNode(astNode, key);
+        Hint hint = _hintForPath('$path/$key');
+        Node node = navigateNode(astNode, key);
         if (hint != null) {
           typeDef = new TypeDefinition(hint.type, astNode: node);
         } else {
@@ -73,38 +71,41 @@ class ModelGenerator {
         }
         classDefinition.addField(key, typeDef);
       });
-      final similarClass = allClasses.firstWhere((cd) => cd == classDefinition,
+      ClassDefinition similarClass = allClasses.firstWhere(
+          (ClassDefinition cd) => cd == classDefinition,
           orElse: () => null);
       if (similarClass != null) {
-        final similarClassName = similarClass.name;
-        final currentClassName = classDefinition.name;
+        String similarClassName = similarClass.name;
+        String currentClassName = classDefinition.name;
         sameClassMapping[currentClassName] = similarClassName;
       } else {
         allClasses.add(classDefinition);
       }
-      final dependencies = classDefinition.dependencies;
-      dependencies.forEach((dependency) {
+      List<Dependency> dependencies = classDefinition.dependencies;
+      dependencies.forEach((Dependency dependency) {
         List<Warning> warns;
         if (dependency.typeDef.name == 'List') {
           // only generate dependency class if the array is not empty
           if (jsonRawData[dependency.name].length > 0) {
-            // when list has ambiguous values, take the first one, otherwise merge all objects
+            // when list has ambiguous values,
+            // take the first one, otherwise merge all objects
             // into a single one
             dynamic toAnalyze;
             if (!dependency.typeDef.isAmbiguous) {
-              WithWarning<Map> mergeWithWarning = mergeObjectList(
-                  jsonRawData[dependency.name], '$path/${dependency.name}');
+              WithWarning<Map<dynamic, dynamic>> mergeWithWarning =
+                  mergeObjectList(
+                      jsonRawData[dependency.name], '$path/${dependency.name}');
               toAnalyze = mergeWithWarning.result;
               warnings.addAll(mergeWithWarning.warnings);
             } else {
               toAnalyze = jsonRawData[dependency.name][0];
             }
-            final node = navigateNode(astNode, dependency.name);
+            Node node = navigateNode(astNode, dependency.name);
             warns = _generateClassDefinition(dependency.className, toAnalyze,
                 '$path/${dependency.name}', node);
           }
         } else {
-          final node = navigateNode(astNode, dependency.name);
+          Node node = navigateNode(astNode, dependency.name);
           warns = _generateClassDefinition(dependency.className,
               jsonRawData[dependency.name], '$path/${dependency.name}', node);
         }
@@ -121,30 +122,32 @@ class ModelGenerator {
   /// formatted JSON string. The dart code is not validated so invalid dart code
   /// might be returned
   DartCode generateUnsafeDart(String rawJson) {
-    final jsonRawData = decodeJSON(rawJson);
-    final astNode = parse(rawJson, Settings());
+    dynamic jsonRawData = decodeJSON(rawJson);
+    Node astNode = parse(rawJson, Settings());
     List<Warning> warnings =
-        _generateClassDefinition(_rootClassName, jsonRawData, "", astNode);
+        _generateClassDefinition(_rootClassName, jsonRawData, '', astNode);
     // after generating all classes, replace the omited similar classes.
-    allClasses.forEach((c) {
-      final fieldsKeys = c.fields.keys;
-      fieldsKeys.forEach((f) {
-        final typeForField = c.fields[f];
+    allClasses.forEach((ClassDefinition c) {
+      Iterable<String> fieldsKeys = c.fields.keys;
+      fieldsKeys.forEach((String f) {
+        TypeDefinition typeForField = c.fields[f];
         if (sameClassMapping.containsKey(typeForField.name)) {
           c.fields[f].name = sameClassMapping[typeForField.name];
         }
       });
     });
     return new DartCode(
-        allClasses.map((c) => c.toString()).join('\n'), warnings);
+        allClasses.map((ClassDefinition c) => c.toString()).join('\n'),
+        warnings);
   }
 
   /// generateDartClasses will generate all classes and append one after another
   /// in a single string. The [rawJson] param is assumed to be a properly
-  /// formatted JSON string. If the generated dart is invalid it will throw an error.
+  /// formatted JSON string. 
+  /// If the generated dart is invalid it will throw an error.
   DartCode generateDartClasses(String rawJson) {
-    final unsafeDartCode = generateUnsafeDart(rawJson);
-    final formatter = new DartFormatter();
+    DartCode unsafeDartCode = generateUnsafeDart(rawJson);
+    DartFormatter formatter = new DartFormatter();
     return new DartCode(
         formatter.format(unsafeDartCode.code), unsafeDartCode.warnings);
   }

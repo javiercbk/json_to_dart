@@ -7,21 +7,21 @@ import 'package:json_to_dart/model_generator.dart';
 import 'package:json_to_dart/helpers.dart' show isASTLiteralDouble;
 
 String _scriptPath() {
-  var script = Platform.script.toString();
-  if (script.startsWith("file://")) {
+  String script = Platform.script.toString();
+  if (script.startsWith('file://')) {
     script = script.substring(7);
   } else {
-    final idx = script.indexOf("file:/");
+    int idx = script.indexOf('file:/');
     script = script.substring(idx + 5);
   }
   return script;
 }
 
 void main() {
-  group("Should identify doubles and ints", () {
-    final currentDirectory = dirname(_scriptPath());
+  group('Should identify doubles and ints', () {
+    String currentDirectory = dirname(_scriptPath());
 
-    test("should parse literals correctly", () {
+    test('should parse literals correctly', () {
       expect(isASTLiteralDouble(LiteralNode(1, '1')), isFalse);
       expect(isASTLiteralDouble(LiteralNode(1e0, '1e0')), isFalse);
       expect(isASTLiteralDouble(LiteralNode(1e1, '1e1')), isFalse);
@@ -45,16 +45,18 @@ void main() {
       expect(isASTLiteralDouble(LiteralNode(0.1, '0.1')), isTrue);
     });
 
-    test("Should identify a double number and generate the proper type", () {
-      final jsonPath = normalize(join(currentDirectory, 'double.json'));
-      final jsonRawData = new File(jsonPath).readAsStringSync();
-      final modelGenerator = ModelGenerator('DoubleTest');
-      final dartSourceCode = modelGenerator.generateDartClasses(jsonRawData);
-      final wrongDoubleRegExp = RegExp(r"^.*double int[0-9]+;$");
-      final wrongIntRegExp = RegExp(r"^.*int double[0-9]+;$");
-      final wrongDoubleMatch =
+    test('Should identify a double number and generate the proper type', () {
+      String jsonPath = normalize(join(currentDirectory, 'double.json'));
+      String jsonRawData = new File(jsonPath).readAsStringSync();
+      ModelGenerator modelGenerator = ModelGenerator('DoubleTest');
+      DartCode dartSourceCode =
+          modelGenerator.generateDartClasses(jsonRawData);
+      RegExp wrongDoubleRegExp = RegExp(r'^.*double int[0-9]+;$');
+      RegExp wrongIntRegExp = RegExp(r'^.*int double[0-9]+;$');
+      RegExpMatch wrongDoubleMatch =
           wrongDoubleRegExp.firstMatch(dartSourceCode.code);
-      final wrongIntMatch = wrongIntRegExp.firstMatch(dartSourceCode.code);
+      RegExpMatch wrongIntMatch =
+          wrongIntRegExp.firstMatch(dartSourceCode.code);
       expect(wrongDoubleMatch, isNull, reason: 'Wrong double found');
       expect(wrongIntMatch, isNull, reason: 'Wrong int found');
     });

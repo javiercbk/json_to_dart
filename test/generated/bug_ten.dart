@@ -1,5 +1,4 @@
 class BugTen {
-  Glossary glossary;
 
   BugTen({this.glossary});
 
@@ -8,9 +7,10 @@ class BugTen {
         ? new Glossary.fromJson(json['glossary'])
         : null;
   }
+  Glossary glossary;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.glossary != null) {
       data['glossary'] = this.glossary.toJson();
     }
@@ -19,8 +19,6 @@ class BugTen {
 }
 
 class Glossary {
-  String title;
-  GlossDiv glossDiv;
 
   Glossary({this.title, this.glossDiv});
 
@@ -30,9 +28,11 @@ class Glossary {
         ? new GlossDiv.fromJson(json['GlossDiv'])
         : null;
   }
+  String title;
+  GlossDiv glossDiv;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
     if (this.glossDiv != null) {
       data['GlossDiv'] = this.glossDiv.toJson();
@@ -42,8 +42,6 @@ class Glossary {
 }
 
 class GlossDiv {
-  String title;
-  GlossList glossList;
 
   GlossDiv({this.title, this.glossList});
 
@@ -53,9 +51,11 @@ class GlossDiv {
         ? new GlossList.fromJson(json['GlossList'])
         : null;
   }
+  String title;
+  GlossList glossList;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
     if (this.glossList != null) {
       data['GlossList'] = this.glossList.toJson();
@@ -65,7 +65,6 @@ class GlossDiv {
 }
 
 class GlossList {
-  GlossEntry glossEntry;
 
   GlossList({this.glossEntry});
 
@@ -74,9 +73,10 @@ class GlossList {
         ? new GlossEntry.fromJson(json['GlossEntry'])
         : null;
   }
+  GlossEntry glossEntry;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.glossEntry != null) {
       data['GlossEntry'] = this.glossEntry.toJson();
     }
@@ -85,14 +85,6 @@ class GlossList {
 }
 
 class GlossEntry {
-  String iD;
-  String sortAs;
-  String glossTerm;
-  String acronym;
-  String abbrev;
-  GlossDef glossDef;
-  String glossSee;
-
   GlossEntry(
       {this.iD,
       this.sortAs,
@@ -113,9 +105,16 @@ class GlossEntry {
         : null;
     glossSee = json['GlossSee'];
   }
+  String iD;
+  String sortAs;
+  String glossTerm;
+  String acronym;
+  String abbrev;
+  GlossDef glossDef;
+  String glossSee;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['ID'] = this.iD;
     data['SortAs'] = this.sortAs;
     data['GlossTerm'] = this.glossTerm;
@@ -130,18 +129,17 @@ class GlossEntry {
 }
 
 class GlossDef {
-  String para;
-  List<String> glossSeeAlso;
-
   GlossDef({this.para, this.glossSeeAlso});
 
   GlossDef.fromJson(Map<String, dynamic> json) {
     para = json['para'];
     glossSeeAlso = json['GlossSeeAlso'].cast<String>();
   }
+  String para;
+  List<String> glossSeeAlso;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = new Map<String, dynamic>();
     data['para'] = this.para;
     data['GlossSeeAlso'] = this.glossSeeAlso;
     return data;
