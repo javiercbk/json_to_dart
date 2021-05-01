@@ -115,7 +115,7 @@ class PersonalInfo {
     _lastName = json['lastName'];
     _location = json['location'];
     if (json['phones'] != null) {
-      _phones = new List<Phones>();
+      _phones = <Phones>[];
       json['phones'].forEach((v) {
         _phones.add(new Phones.fromJson(v));
       });

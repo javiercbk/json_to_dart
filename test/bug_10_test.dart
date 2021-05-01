@@ -62,7 +62,7 @@ void main() {
     });
 
     test("Generated class should correctly generate JSON", () {
-      final glossSeeAlso = new List<String>();
+      final glossSeeAlso = <String>[];
       glossSeeAlso.add("GML");
       glossSeeAlso.add("XML");
       final glossDef = new GlossDef(

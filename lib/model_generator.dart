@@ -22,7 +22,7 @@ class Hint {
 class ModelGenerator {
   final String _rootClassName;
   final bool _privateFields;
-  List<ClassDefinition> allClasses = new List<ClassDefinition>();
+  List<ClassDefinition> allClasses = <ClassDefinition>[];
   final Map<String, String> sameClassMapping = new HashMap<String, String>();
   List<Hint> hints;
 
@@ -30,7 +30,7 @@ class ModelGenerator {
     if (hints != null) {
       this.hints = hints;
     } else {
-      this.hints = new List<Hint>();
+      this.hints = <Hint>[];
     }
   }
 
@@ -40,7 +40,7 @@ class ModelGenerator {
 
   List<Warning> _generateClassDefinition(
       String className, dynamic jsonRawDynamicData, String path, Node astNode) {
-    List<Warning> warnings = new List<Warning>();
+    List<Warning> warnings = <Warning>[];
     if (jsonRawDynamicData is List) {
       // if first element is an array, start in the first element.
       final node = navigateNode(astNode, '0');

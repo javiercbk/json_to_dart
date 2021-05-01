@@ -159,7 +159,7 @@ class ClassDefinition {
   bool get privateFields => _privateFields;
 
   List<Dependency> get dependencies {
-    final dependenciesList = new List<Dependency>();
+    final dependenciesList = <Dependency>[];
     final keys = fields.keys;
     keys.forEach((k) {
       final f = fields[k];
