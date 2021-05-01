@@ -69,7 +69,7 @@ decodeJSON(String rawJson) {
 }
 
 WithWarning<Map> mergeObj(Map obj, Map other, String path) {
-  List<Warning> warnings = new List<Warning>();
+  List<Warning> warnings = <Warning>[];
   final Map clone = Map.from(obj);
   other.forEach((k, v) {
     if (clone[k] == null) {
@@ -113,7 +113,7 @@ WithWarning<Map> mergeObj(Map obj, Map other, String path) {
 
 WithWarning<Map> mergeObjectList(List<dynamic> list, String path,
     [int idx = -1]) {
-  List<Warning> warnings = new List<Warning>();
+  List<Warning> warnings = <Warning>[];
   Map obj = new Map();
   for (var i = 0; i < list.length; i++) {
     final toMerge = list[i];

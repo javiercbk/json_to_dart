@@ -100,7 +100,7 @@ void main() {
 
     test("Generated class with private fields should correctly generate JSON",
         () {
-      final phones = new List<Phones>();
+      final phones = <Phones>[];
       final phone = new Phones(
         type: "IP",
         number: "127.0.0.1",
