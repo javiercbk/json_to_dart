@@ -6,10 +6,13 @@ homepage: https://github.com/javiercbk/json_to_dart
 environment:
   sdk: ">=2.0.0 <3.0.0"
 dependencies:
-  json_ast: "^1.0.5"
-  convert: "^2.0.1"
-  dart_style: "^1.0.10"
+  json_ast:
+    git: https://github.com/icofans/json_ast
+
+  convert: ^3.0.1
+  dart_style: ^2.0.3
 
 dev_dependencies:
-  test: "^1.9.4"
-  path: "^1.6.4"
+  test: ^1.17.10
+  path: ^1.8.0
+
