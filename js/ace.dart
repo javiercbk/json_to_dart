@@ -16,7 +16,6 @@ class ACEInterface {
 @JS()
 @anonymous
 class ACEEditor {
-
   external void on(String eventName, Function);
   external String getValue();
   external ACEEditorSession getSession();
