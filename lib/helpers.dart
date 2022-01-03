@@ -1,8 +1,7 @@
 import 'dart:convert' as Convert;
 import 'dart:math';
-import 'package:collection/collection.dart';
 import 'package:json_ast/json_ast.dart'
-    show Node, ObjectNode, ArrayNode, LiteralNode;
+    show Node, ObjectNode, ArrayNode, LiteralNode, PropertyNode;
 import 'package:json_to_dart/syntax.dart';
 
 const Map<String, bool> PRIMITIVE_TYPES = const {
@@ -226,12 +225,14 @@ Node? navigateNode(Node? astNode, String path) {
   Node? node;
   if (astNode is ObjectNode) {
     final ObjectNode objectNode = astNode;
-    final propertyNode = objectNode.children.firstWhereOrNull((final prop) {
-      if (prop.key != null) {
-        return prop.key?.value == path;
+    PropertyNode? propertyNode;
+    for (int i = 0; i < objectNode.children.length; i++) {
+      final prop = objectNode.children[i];
+      if (prop.key != null && prop.key?.value == path) {
+        propertyNode = prop;
+        break;
       }
-      return false;
-    });
+    }
     if (propertyNode != null) {
       node = propertyNode.value;
     }
