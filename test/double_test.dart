@@ -1,26 +1,12 @@
 import 'dart:io';
-import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:json_ast/json_ast.dart' show LiteralNode;
 import 'package:test/test.dart';
 
 import 'package:json_to_dart/model_generator.dart';
 import 'package:json_to_dart/helpers.dart' show isASTLiteralDouble;
 
-String _scriptPath() {
-  var script = Platform.script.toString();
-  if (script.startsWith("file://")) {
-    script = script.substring(7);
-  } else {
-    final idx = script.indexOf("file:/");
-    script = script.substring(idx + 5);
-  }
-  return script;
-}
-
 void main() {
   group("Should identify doubles and ints", () {
-    final currentDirectory = dirname(_scriptPath());
-
     test("should parse literals correctly", () {
       expect(isASTLiteralDouble(LiteralNode(1, '1')), isFalse);
       expect(isASTLiteralDouble(LiteralNode(1e0, '1e0')), isFalse);
@@ -46,8 +32,8 @@ void main() {
     });
 
     test("Should identify a double number and generate the proper type", () {
-      final jsonPath = normalize(join(currentDirectory, 'double.json'));
-      final jsonRawData = new File(jsonPath).readAsStringSync();
+      final jsonRawData =
+          new File("test_resources/double.json").readAsStringSync();
       final modelGenerator = ModelGenerator('DoubleTest');
       final dartSourceCode = modelGenerator.generateDartClasses(jsonRawData);
       final wrongDoubleRegExp = RegExp(r"^.*double int[0-9]+;$");

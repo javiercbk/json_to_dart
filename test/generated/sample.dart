@@ -1,13 +1,13 @@
 class Sample {
-  String username;
-  int favouriteInteger;
-  double favouriteDouble;
-  String url;
-  String htmlUrl;
-  List<String> tags;
-  List<int> randomIntegers;
-  List<double> randomDoubles;
-  PersonalInfo personalInfo;
+  String? username;
+  int? favouriteInteger;
+  double? favouriteDouble;
+  String? url;
+  String? htmlUrl;
+  List<String>? tags;
+  List<int>? randomIntegers;
+  List<double>? randomDoubles;
+  PersonalInfo? personalInfo;
 
   Sample(
       {this.username,
@@ -45,17 +45,17 @@ class Sample {
     data['randomIntegers'] = this.randomIntegers;
     data['randomDoubles'] = this.randomDoubles;
     if (this.personalInfo != null) {
-      data['personalInfo'] = this.personalInfo.toJson();
+      data['personalInfo'] = this.personalInfo!.toJson();
     }
     return data;
   }
 }
 
 class PersonalInfo {
-  String firstName;
-  String lastName;
-  String location;
-  List<Phones> phones;
+  String? firstName;
+  String? lastName;
+  String? location;
+  List<Phones>? phones;
 
   PersonalInfo({this.firstName, this.lastName, this.location, this.phones});
 
@@ -64,9 +64,9 @@ class PersonalInfo {
     lastName = json['lastName'];
     location = json['location'];
     if (json['phones'] != null) {
-      phones = new List<Phones>();
+      phones = <Phones>[];
       json['phones'].forEach((v) {
-        phones.add(new Phones.fromJson(v));
+        phones!.add(new Phones.fromJson(v));
       });
     }
   }
@@ -77,16 +77,16 @@ class PersonalInfo {
     data['lastName'] = this.lastName;
     data['location'] = this.location;
     if (this.phones != null) {
-      data['phones'] = this.phones.map((v) => v.toJson()).toList();
+      data['phones'] = this.phones!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Phones {
-  String type;
-  String number;
-  bool shouldCall;
+  String? type;
+  String? number;
+  bool? shouldCall;
 
   Phones({this.type, this.number, this.shouldCall});
 

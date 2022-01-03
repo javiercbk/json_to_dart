@@ -22,29 +22,34 @@ class Hint {
 class ModelGenerator {
   final String _rootClassName;
   final bool _privateFields;
-  List<ClassDefinition> allClasses = new List<ClassDefinition>();
+  List<ClassDefinition> allClasses = <ClassDefinition>[];
   final Map<String, String> sameClassMapping = new HashMap<String, String>();
-  List<Hint> hints;
+  late List<Hint> hints;
 
   ModelGenerator(this._rootClassName, [this._privateFields = false, hints]) {
     if (hints != null) {
       this.hints = hints;
     } else {
-      this.hints = new List<Hint>();
+      this.hints = <Hint>[];
     }
   }
 
-  Hint _hintForPath(String path) {
-    return this.hints.firstWhere((h) => h.path == path, orElse: () => null);
+  Hint? _hintForPath(String path) {
+    final hint = this
+        .hints
+        .firstWhere((h) => h.path == path, orElse: () => Hint("", ""));
+    if (hint.path == "") {
+      return null;
+    }
   }
 
-  List<Warning> _generateClassDefinition(
-      String className, dynamic jsonRawDynamicData, String path, Node astNode) {
-    List<Warning> warnings = new List<Warning>();
+  List<Warning> _generateClassDefinition(String className,
+      dynamic jsonRawDynamicData, String path, Node? astNode) {
+    List<Warning> warnings = <Warning>[];
     if (jsonRawDynamicData is List) {
       // if first element is an array, start in the first element.
       final node = navigateNode(astNode, '0');
-      _generateClassDefinition(className, jsonRawDynamicData[0], path, node);
+      _generateClassDefinition(className, jsonRawDynamicData[0], path, node!);
     } else {
       final Map<dynamic, dynamic> jsonRawData = jsonRawDynamicData;
       final keys = jsonRawData.keys;
@@ -74,8 +79,8 @@ class ModelGenerator {
         classDefinition.addField(key, typeDef);
       });
       final similarClass = allClasses.firstWhere((cd) => cd == classDefinition,
-          orElse: () => null);
-      if (similarClass != null) {
+          orElse: () => ClassDefinition(""));
+      if (similarClass.name != "") {
         final similarClassName = similarClass.name;
         final currentClassName = classDefinition.name;
         sameClassMapping[currentClassName] = similarClassName;
@@ -84,7 +89,7 @@ class ModelGenerator {
       }
       final dependencies = classDefinition.dependencies;
       dependencies.forEach((dependency) {
-        List<Warning> warns;
+        List<Warning> warns = <Warning>[];
         if (dependency.typeDef.name == 'List') {
           // only generate dependency class if the array is not empty
           if (jsonRawData[dependency.name].length > 0) {
@@ -108,9 +113,7 @@ class ModelGenerator {
           warns = _generateClassDefinition(dependency.className,
               jsonRawData[dependency.name], '$path/${dependency.name}', node);
         }
-        if (warns != null) {
-          warnings.addAll(warns);
-        }
+        warnings.addAll(warns);
       });
     }
     return warnings;
@@ -130,8 +133,10 @@ class ModelGenerator {
       final fieldsKeys = c.fields.keys;
       fieldsKeys.forEach((f) {
         final typeForField = c.fields[f];
-        if (sameClassMapping.containsKey(typeForField.name)) {
-          c.fields[f].name = sameClassMapping[typeForField.name];
+        if (typeForField != null) {
+          if (sameClassMapping.containsKey(typeForField.name)) {
+            c.fields[f]!.name = sameClassMapping[typeForField.name]!;
+          }
         }
       });
     });

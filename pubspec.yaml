@@ -1,15 +1,14 @@
 name: json_to_dart
-version: 1.0.4
-author: Javier Lecuona <javierlecuona@gmail.com>
+version: 1.0.5
 description: A library that generates Dart classes (parse and generator included) from a json string.
 homepage: https://github.com/javiercbk/json_to_dart
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 dependencies:
-  json_ast: "^1.0.5"
-  convert: "^2.0.1"
-  dart_style: "^1.0.10"
+  json_ast: "^1.0.6"
+  convert: "^3.0.1"
+  dart_style: "^2.2.1"
 
 dev_dependencies:
-  test: "^1.9.4"
-  path: "^1.6.4"
+  test: "^1.20.1"
+  path: "^1.8.1"

@@ -1,27 +1,14 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:path/path.dart' show dirname, join, normalize;
 import 'package:test/test.dart';
 import './generated/sample_private.dart';
 
-String _scriptPath() {
-  var script = Platform.script.toString();
-  if (script.startsWith("file://")) {
-    script = script.substring(7);
-  } else {
-    final idx = script.indexOf("file:/");
-    script = script.substring(idx + 5);
-  }
-  return script;
-}
-
 void main() {
   group("model-generator", () {
-    final currentDirectory = dirname(_scriptPath());
     test("Generated class with private fields should correctly parse JSON", () {
-      final jsonPath = normalize(join(currentDirectory, 'test.json'));
-      final jsonRawData = new File(jsonPath).readAsStringSync();
-      Map sampleMap = json.decode(jsonRawData);
+      final jsonRawData =
+          new File("test_resources/test.json").readAsStringSync();
+      Map<String, dynamic> sampleMap = json.decode(jsonRawData);
       final sample = new Sample.fromJson(sampleMap);
       expect(sample, isNot(isNull));
       expect(sample.username, equals('javiercbk'));
@@ -30,28 +17,28 @@ void main() {
       expect(sample.url, equals('https://api.github.com/users/javiercbk'));
       expect(sample.htmlUrl, equals('https://github.com/javiercbk'));
       expect(sample.tags, isNot(isNull));
-      expect(sample.tags.length, equals(3));
-      expect(sample.tags[0], equals('dart'));
-      expect(sample.tags[1], equals('json'));
-      expect(sample.tags[2], equals('cool'));
+      expect(sample.tags!.length, equals(3));
+      expect(sample.tags![0], equals('dart'));
+      expect(sample.tags![1], equals('json'));
+      expect(sample.tags![2], equals('cool'));
       expect(sample.randomIntegers, isNot(isNull));
-      expect(sample.randomIntegers.length, equals(3));
-      expect(sample.randomIntegers[0], equals(1));
-      expect(sample.randomIntegers[1], equals(2));
-      expect(sample.randomIntegers[2], equals(3));
+      expect(sample.randomIntegers!.length, equals(3));
+      expect(sample.randomIntegers![0], equals(1));
+      expect(sample.randomIntegers![1], equals(2));
+      expect(sample.randomIntegers![2], equals(3));
       expect(sample.randomDoubles, isNot(isNull));
-      expect(sample.randomDoubles.length, equals(3));
-      expect(sample.randomDoubles[0], equals(1.1));
-      expect(sample.randomDoubles[1], equals(2.2));
-      expect(sample.randomDoubles[2], equals(3.3));
+      expect(sample.randomDoubles!.length, equals(3));
+      expect(sample.randomDoubles![0], equals(1.1));
+      expect(sample.randomDoubles![1], equals(2.2));
+      expect(sample.randomDoubles![2], equals(3.3));
       final pi = sample.personalInfo;
       expect(pi, isNot(isNull));
-      expect(pi.firstName, equals('Javier'));
+      expect(pi!.firstName, equals('Javier'));
       expect(pi.lastName, equals('Lecuona'));
       expect(pi.location, equals('Buenos Aires, Argentina'));
       final ph = pi.phones;
       expect(ph, isNot(isNull));
-      expect(ph.length, equals(2));
+      expect(ph!.length, equals(2));
       expect(ph[0], isNot(isNull));
       expect(ph[0].type, equals('work'));
       expect(ph[0].number, equals('123-this-is-a-fake-phone'));
@@ -65,9 +52,9 @@ void main() {
     test(
         "Generated class with private fields should correctly parse JSON with missing values",
         () {
-      final jsonPath = normalize(join(currentDirectory, 'test_missing.json'));
-      final jsonRawData = new File(jsonPath).readAsStringSync();
-      Map sampleMap = json.decode(jsonRawData);
+      final jsonRawData =
+          new File("test_resources/test_missing.json").readAsStringSync();
+      Map<String, dynamic> sampleMap = json.decode(jsonRawData);
       final sample = new Sample.fromJson(sampleMap);
       expect(sample, isNot(isNull));
       expect(sample.username, equals('javiercbk'));
@@ -76,23 +63,23 @@ void main() {
       expect(sample.url, equals('https://api.github.com/users/javiercbk'));
       expect(sample.htmlUrl, isNull);
       expect(sample.tags, isNot(isNull));
-      expect(sample.tags.length, equals(3));
-      expect(sample.tags[0], equals('dart'));
-      expect(sample.tags[1], equals('json'));
-      expect(sample.tags[2], equals('cool'));
+      expect(sample.tags!.length, equals(3));
+      expect(sample.tags![0], equals('dart'));
+      expect(sample.tags![1], equals('json'));
+      expect(sample.tags![2], equals('cool'));
       expect(sample.randomIntegers, isNot(isNull));
-      expect(sample.randomIntegers.length, equals(3));
-      expect(sample.randomIntegers[0], equals(1));
-      expect(sample.randomIntegers[1], equals(2));
-      expect(sample.randomIntegers[2], equals(3));
+      expect(sample.randomIntegers!.length, equals(3));
+      expect(sample.randomIntegers![0], equals(1));
+      expect(sample.randomIntegers![1], equals(2));
+      expect(sample.randomIntegers![2], equals(3));
       expect(sample.randomDoubles, isNot(isNull));
-      expect(sample.randomDoubles.length, equals(3));
-      expect(sample.randomDoubles[0], equals(1.1));
-      expect(sample.randomDoubles[1], equals(2.2));
-      expect(sample.randomDoubles[2], equals(3.3));
+      expect(sample.randomDoubles!.length, equals(3));
+      expect(sample.randomDoubles![0], equals(1.1));
+      expect(sample.randomDoubles![1], equals(2.2));
+      expect(sample.randomDoubles![2], equals(3.3));
       final pi = sample.personalInfo;
       expect(pi, isNot(isNull));
-      expect(pi.firstName, equals('Javier'));
+      expect(pi!.firstName, equals('Javier'));
       expect(pi.lastName, isNull);
       expect(pi.location, isNull);
       expect(pi.phones, isNull);
@@ -100,7 +87,7 @@ void main() {
 
     test("Generated class with private fields should correctly generate JSON",
         () {
-      final phones = new List<Phones>();
+      final phones = <Phones>[];
       final phone = new Phones(
         type: "IP",
         number: "127.0.0.1",

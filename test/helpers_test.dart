@@ -4,6 +4,12 @@ import 'package:json_to_dart/syntax.dart';
 
 void main() {
   group("helpers", () {
+    test("getInferredType should return the correct types", () {
+      expect(getInferredType(1), equals(ListType.Int));
+      expect(getInferredType(1.1), equals(ListType.Double));
+      expect(getInferredType("asd"), equals(ListType.String));
+      expect(getInferredType({"a": "a"}), equals(ListType.Object));
+    });
     test("camelCase should correctly transform Strings", () {
       const Map<String, String> mappings = const {
         'kebab-case': 'KebabCase',

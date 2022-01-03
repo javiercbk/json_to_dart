@@ -1,5 +1,5 @@
 class BugTen {
-  Glossary glossary;
+  Glossary? glossary;
 
   BugTen({this.glossary});
 
@@ -12,15 +12,15 @@ class BugTen {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.glossary != null) {
-      data['glossary'] = this.glossary.toJson();
+      data['glossary'] = this.glossary!.toJson();
     }
     return data;
   }
 }
 
 class Glossary {
-  String title;
-  GlossDiv glossDiv;
+  String? title;
+  GlossDiv? glossDiv;
 
   Glossary({this.title, this.glossDiv});
 
@@ -35,15 +35,15 @@ class Glossary {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
     if (this.glossDiv != null) {
-      data['GlossDiv'] = this.glossDiv.toJson();
+      data['GlossDiv'] = this.glossDiv!.toJson();
     }
     return data;
   }
 }
 
 class GlossDiv {
-  String title;
-  GlossList glossList;
+  String? title;
+  GlossList? glossList;
 
   GlossDiv({this.title, this.glossList});
 
@@ -58,14 +58,14 @@ class GlossDiv {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
     if (this.glossList != null) {
-      data['GlossList'] = this.glossList.toJson();
+      data['GlossList'] = this.glossList!.toJson();
     }
     return data;
   }
 }
 
 class GlossList {
-  GlossEntry glossEntry;
+  GlossEntry? glossEntry;
 
   GlossList({this.glossEntry});
 
@@ -78,20 +78,20 @@ class GlossList {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.glossEntry != null) {
-      data['GlossEntry'] = this.glossEntry.toJson();
+      data['GlossEntry'] = this.glossEntry!.toJson();
     }
     return data;
   }
 }
 
 class GlossEntry {
-  String iD;
-  String sortAs;
-  String glossTerm;
-  String acronym;
-  String abbrev;
-  GlossDef glossDef;
-  String glossSee;
+  String? iD;
+  String? sortAs;
+  String? glossTerm;
+  String? acronym;
+  String? abbrev;
+  GlossDef? glossDef;
+  String? glossSee;
 
   GlossEntry(
       {this.iD,
@@ -122,7 +122,7 @@ class GlossEntry {
     data['Acronym'] = this.acronym;
     data['Abbrev'] = this.abbrev;
     if (this.glossDef != null) {
-      data['GlossDef'] = this.glossDef.toJson();
+      data['GlossDef'] = this.glossDef!.toJson();
     }
     data['GlossSee'] = this.glossSee;
     return data;
@@ -130,8 +130,8 @@ class GlossEntry {
 }
 
 class GlossDef {
-  String para;
-  List<String> glossSeeAlso;
+  String? para;
+  List<String>? glossSeeAlso;
 
   GlossDef({this.para, this.glossSeeAlso});
 
