@@ -126,7 +126,7 @@ class TypeDefinition {
   String toJsonExpression(String key, bool privateField) {
     final fieldKey =
         fixFieldName(key, typeDef: this, privateField: privateField);
-    final thisKey = 'this.$fieldKey';
+    final thisKey = '$fieldKey';
     if (isPrimitive) {
       return "data['$key'] = $thisKey;";
     } else if (name == 'List') {
@@ -311,7 +311,7 @@ class ClassDefinition {
   String get _jsonGenFunc {
     final sb = new StringBuffer();
     sb.write(
-        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
+        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = <String, dynamic>{};\n');
     fields.keys.forEach((k) {
       sb.write('\t\t${fields[k]!.toJsonExpression(k, privateFields)}\n');
     });
