@@ -13,15 +13,15 @@ class Warning {
 }
 
 Warning newEmptyListWarn(String path) {
-  return new Warning(emptyListWarn, path);
+  return Warning(emptyListWarn, path);
 }
 
 Warning newAmbiguousListWarn(String path) {
-  return new Warning(ambiguousListWarn, path);
+  return Warning(ambiguousListWarn, path);
 }
 
 Warning newAmbiguousType(String path) {
-  return new Warning(ambiguousTypeWarn, path);
+  return Warning(ambiguousTypeWarn, path);
 }
 
 class WithWarning<T> {
@@ -56,10 +56,10 @@ class TypeDefinition {
         // when array is empty insert Null just to warn the user
         elemType = "Null";
       }
-      return new TypeDefinition(type,
+      return TypeDefinition(type,
           astNode: astNode, subtype: elemType, isAmbiguous: isAmbiguous);
     }
-    return new TypeDefinition(type, astNode: astNode, isAmbiguous: isAmbiguous);
+    return TypeDefinition(type, astNode: astNode, isAmbiguous: isAmbiguous);
   }
 
   TypeDefinition(this.name,
@@ -91,7 +91,7 @@ class TypeDefinition {
 
   String _buildParseClass(String expression) {
     final properType = subtype != null ? subtype : name;
-    return 'new $properType.fromJson($expression)';
+    return ' $properType.fromJson($expression)';
   }
 
   String _buildToJsonClass(String expression, [bool nullGuard = true]) {
@@ -116,7 +116,7 @@ class TypeDefinition {
       return "$fieldKey = DateTime.tryParse(json['$key']);";
     } else if (name == 'List') {
       // list of class
-      return "if (json['$key'] != null) {\n\t\t\t$fieldKey = <$subtype>[];\n\t\t\tjson['$key'].forEach((v) { $fieldKey!.add(new $subtype.fromJson(v)); });\n\t\t}";
+      return "if (json['$key'] != null) {\n\t\t\t$fieldKey = <$subtype>[];\n\t\t\tjson['$key'].forEach((v) { $fieldKey!.add( $subtype.fromJson(v)); });\n\t\t}";
     } else {
       // class
       return "$fieldKey = json['$key'] != null ? ${_buildParseClass(jsonKey)} : null;";
@@ -155,7 +155,7 @@ class Dependency {
 class ClassDefinition {
   final String _name;
   final bool _privateFields;
-  final Map<String, TypeDefinition> fields = new Map<String, TypeDefinition>();
+  final Map<String, TypeDefinition> fields = Map<String, TypeDefinition>();
 
   String get name => _name;
   bool get privateFields => _privateFields;
@@ -166,7 +166,7 @@ class ClassDefinition {
     keys.forEach((k) {
       final f = fields[k];
       if (f != null && !f.isPrimitive) {
-        dependenciesList.add(new Dependency(k, f));
+        dependenciesList.add(Dependency(k, f));
       }
     });
     return dependenciesList;
@@ -221,7 +221,7 @@ class ClassDefinition {
       final f = fields[key]!;
       final fieldName =
           fixFieldName(key, typeDef: f, privateField: privateFields);
-      final sb = new StringBuffer();
+      final sb = StringBuffer();
       sb.write('\t');
       _addTypeDef(f, sb);
       sb.write('? $fieldName;');
@@ -236,7 +236,7 @@ class ClassDefinition {
           fixFieldName(key, typeDef: f, privateField: false);
       final privateFieldName =
           fixFieldName(key, typeDef: f, privateField: true);
-      final sb = new StringBuffer();
+      final sb = StringBuffer();
       sb.write('\t');
       _addTypeDef(f, sb);
       sb.write(
@@ -248,7 +248,7 @@ class ClassDefinition {
   }
 
   String get _defaultPrivateConstructor {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name({');
     var i = 0;
     var len = fields.keys.length - 1;
@@ -279,7 +279,7 @@ class ClassDefinition {
   }
 
   String get _defaultConstructor {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name({');
     var i = 0;
     var len = fields.keys.length - 1;
@@ -298,7 +298,7 @@ class ClassDefinition {
   }
 
   String get _jsonParseFunc {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write('\t$name');
     sb.write('.fromJson(Map<String, dynamic> json) {\n');
     fields.keys.forEach((k) {
@@ -309,9 +309,9 @@ class ClassDefinition {
   }
 
   String get _jsonGenFunc {
-    final sb = new StringBuffer();
+    final sb = StringBuffer();
     sb.write(
-        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data = new Map<String, dynamic>();\n');
+        '\tMap<String, dynamic> toJson() {\n\t\tfinal Map<String, dynamic> data =  Map<String, dynamic>();\n');
     fields.keys.forEach((k) {
       sb.write('\t\t${fields[k]!.toJsonExpression(k, privateFields)}\n');
     });
