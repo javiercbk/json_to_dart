@@ -41,6 +41,7 @@ class ModelGenerator {
     if (hint.path == "") {
       return null;
     }
+    return null;
   }
 
   List<Warning> _generateClassDefinition(String className,
