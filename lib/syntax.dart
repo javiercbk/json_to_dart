@@ -126,7 +126,7 @@ class TypeDefinition {
   String toJsonExpression(String key, bool privateField) {
     final fieldKey =
         fixFieldName(key, typeDef: this, privateField: privateField);
-    final thisKey = 'this.$fieldKey';
+    final thisKey = fieldKey;
     if (isPrimitive) {
       return "data['$key'] = $thisKey;";
     } else if (name == 'List') {
